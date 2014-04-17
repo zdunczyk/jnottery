@@ -1,0 +1,15 @@
+{
+  "name": "jNottery",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zdunczyk/jnottery.git"
+  },
+  "dependencies": {
+    "grunt": "~0.4.4"
+  },
+  "author": "Tomasz Zduńczyk",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zdunczyk/jnottery/issues"
+  }
+}
