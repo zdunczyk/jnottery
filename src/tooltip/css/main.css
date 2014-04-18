@@ -17,6 +17,7 @@
     font-size: 11pt;
     font-family: 'Helvetica', Arial, 'lucida grande', tahoma, verdana, arial, sans-serif;
     border-radius: 5px;
+    opacity: 0.0;
 }
 
 .tt-tooltip a {

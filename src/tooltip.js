@@ -55,12 +55,59 @@
         content: ''
     };
 
+    var fading_change = 8,
+        fading_speed = 200;
+
+    function fadeIn($element) {
+        $element
+            .css('width', '-=' + fading_change)
+            .css('height', '-=' + fading_change)
+            .css('top', '+=' + (fading_change/2))
+            .css('left', '+=' + (fading_change/2))
+            .css('display', 'block')
+        .animate({
+            width: '+=' + fading_change,
+            height: '+=' + fading_change,
+            top: '-=' + (fading_change/2),
+            left: '-=' + (fading_change/2),
+            opacity: 1.0
+        }, fading_speed);
+    }
+
+    function fadeOut($element) {
+        $element.animate({
+            width: '-=' + fading_change,
+            height: '-=' + fading_change,
+            top: '+=' + (fading_change/2),
+            left: '+=' + (fading_change/2),
+            opacity: 0.0
+        }, fading_speed, function() {
+            $(this).css('display', 'none');    
+        });        
+    }
+
+    function initEvents($tooltip) {
+        $tooltip.on('tt.close', function() {
+            fadeOut($(this));     
+        });
+
+        $tooltip.find('.tt-close').on('click', function() {
+            $tooltip.trigger('tt.close');    
+        });
+    }
+
     tt.tooltip = $.extend(tt.tooltip || {}, {
         open: function(options) {
+            var $tooltip;
+
             options = $.extend({}, defaults, options); 
 
             if(typeof main_view !== 'undefined') {
-                $(document.body).append(nano(main_view, view_defaults));     
+                $(document.body).append(nano(main_view, view_defaults));   
+                $tooltip = $('.tt-tooltip');
+                
+                initEvents($tooltip);
+                fadeIn($tooltip);
             }
         }    
     });
