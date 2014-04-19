@@ -12,7 +12,10 @@
     position: absolute;
     color: #4e4e4e;
     display: inline-block;
-    min-width: 160px;
+    min-width: 244px;
+    min-height: 144px;
+    width: 244px;
+    height: 144px;
     padding: 10px;
     font-size: 11pt;
     font-family: 'Helvetica', Arial, 'lucida grande', tahoma, verdana, arial, sans-serif;
@@ -65,7 +68,6 @@
     font-family: inherit;
     cursor: pointer;
     margin-top: 5px;
-    padding: 3px;
     font-size: inherit;
     font-weight: 600;
     display: block;
