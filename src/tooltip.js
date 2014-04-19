@@ -114,7 +114,9 @@
                     tooltip_pos = options.position,
                     window_width = $(window).width(),
                     window_height = $(window).height(),
-                    window_offset = { top: $(window).scrollTop(), left: $(window).scrollLeft() };
+                    window_offset = { top: $(window).scrollTop(), left: $(window).scrollLeft() },
+                    window_bottom_edge = window_offset.top + window_height,
+                    window_right_edge = window_offset.left + window_width;
 
                 if(document.doctype === null || screen.height < parseInt(window_height)) {
                     throw new Error('jNottery: Please specify doctype for your document, it\'s required for height calculation');
@@ -132,8 +134,8 @@
                     $.each({
                         top: (elem_offset.top - window_offset.top) - tooltip_height,
                         left: (elem_offset.left - window_offset.left) - tooltip_width,
-                        bottom: ((window_offset.top + window_height) - (elem_offset.top + elem_height)) - tooltip_height,
-                        right: ((window_offset.left + window_width) - (elem_offset.left + elem_width)) - tooltip_width
+                        bottom: (window_bottom_edge - (elem_offset.top + elem_height)) - tooltip_height,
+                        right: (window_right_edge - (elem_offset.left + elem_width)) - tooltip_width
                     }, function(pos, space) {
                         if(typeof min_cutting === 'undefined' || space > min_cutting.space)
                             min_cutting = { name: pos, space: space };
@@ -147,6 +149,60 @@
                         min_cutting = min_extra_space;
 
                     tooltip_pos = min_cutting.name;
+                }
+    
+                var arrow_pos = { top: elem_offset.top, left: elem_offset.left };
+            
+                if(tooltip_pos === 'top' || tooltip_pos === 'bottom') {
+                    if(tooltip_pos === 'bottom')
+                        arrow_pos.top += elem_height;
+                            
+                    switch(options.arrow) {
+                        case 'plus': {
+                            arrow_pos.left += Math.min(elem_width, window_right_edge - elem_offset.left);
+                            break;
+                        }
+                        case 'minus': {
+                            arrow_pos.left += Math.max(0, window_offset.left - elem_offset.left); 
+                            break;
+                        }
+                        case 'center': {
+                            arrow_pos.left += Math.floor(elem_width / 2);
+                            arrow_pos.left = Math.max(
+                                    Math.min(arrow_pos.left, window_right_edge), 
+                                    window_offset.left
+                            );
+                            break;
+                        }
+                        default: {
+                            arrow_pos.left += Math.max(parseInt(options.arrow), 0);
+                        }
+                    }
+                } else {
+                    if(tooltip_pos === 'right') 
+                        arrow_pos.left += elem_width;
+
+                    switch(options.arrow) {
+                        case 'plus': {
+                            arrow_pos.top += Math.min(elem_height, window_bottom_edge - elem_offset.top);
+                            break;
+                        }
+                        case 'minus': {
+                            arrow_pos.top += Math.max(0, window_offset.top - elem_offset.top); 
+                            break;
+                        }
+                        case 'center': {
+                            arrow_pos.top += Math.floor(elem_height / 2);
+                            arrow_pos.top = Math.max(
+                                    Math.min(arrow_pos.top, window_bottom_edge), 
+                                    window_offset.top
+                            );
+                            break;
+                        }
+                        default: {
+                            arrow_pos.top += Math.max(parseInt(options.arrow), 0);
+                        }
+                    }
                 }
 
                 $tooltip.outerWidth(tooltip_width).outerHeight(tooltip_height);
