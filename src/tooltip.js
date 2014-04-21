@@ -106,12 +106,15 @@
                 options = $.extend({}, defaults, options); 
 
                 var $tooltip,
+                    $arrow,
                     elem_width = options.root.outerWidth(),
                     elem_height = options.root.outerHeight(),
                     elem_offset = options.root.offset(),
                     tooltip_width = Math.max(options.width, TT_TOOLTIP_WIDTH),
                     tooltip_height = Math.max(options.height, TT_TOOLTIP_HEIGHT),
                     tooltip_pos = options.position,
+                    tooltip_offset = null,
+                    arrow_offset = null,
                     window_width = $(window).width(),
                     window_height = $(window).height(),
                     window_offset = { top: $(window).scrollTop(), left: $(window).scrollLeft() },
@@ -124,6 +127,7 @@
 
                 $(document.body).append(nano(main_view, view_defaults));   
                 $tooltip = $('.tt-tooltip');
+                $arrow = $tooltip.find('.tt-arrow');
 
                 if(tooltip_pos === 'auto') {
                         // position where minimum of tooltip is out of the screen
@@ -151,62 +155,131 @@
                     tooltip_pos = min_cutting.name;
                 }
     
-                var arrow_pos = { top: elem_offset.top, left: elem_offset.left };
+                arrow_offset = { top: elem_offset.top, left: elem_offset.left };
             
                 if(tooltip_pos === 'top' || tooltip_pos === 'bottom') {
                     if(tooltip_pos === 'bottom')
-                        arrow_pos.top += elem_height;
+                        arrow_offset.top += elem_height;
                             
                     switch(options.arrow) {
                         case 'plus': {
-                            arrow_pos.left += Math.min(elem_width, window_right_edge - elem_offset.left);
+                            arrow_offset.left += Math.min(elem_width, window_right_edge - elem_offset.left);
                             break;
                         }
                         case 'minus': {
-                            arrow_pos.left += Math.max(0, window_offset.left - elem_offset.left); 
+                            arrow_offset.left += Math.max(0, window_offset.left - elem_offset.left); 
                             break;
                         }
                         case 'center': {
-                            arrow_pos.left += Math.floor(elem_width / 2);
-                            arrow_pos.left = Math.max(
-                                    Math.min(arrow_pos.left, window_right_edge), 
+                            arrow_offset.left += Math.floor(elem_width / 2);
+                            arrow_offset.left = Math.max(
+                                    Math.min(arrow_offset.left, window_right_edge), 
                                     window_offset.left
                             );
                             break;
                         }
                         default: {
-                            arrow_pos.left += Math.max(parseInt(options.arrow), 0);
+                            arrow_offset.left += Math.max(parseInt(options.arrow), 0);
                         }
                     }
                 } else {
                     if(tooltip_pos === 'right') 
-                        arrow_pos.left += elem_width;
+                        arrow_offset.left += elem_width;
 
                     switch(options.arrow) {
                         case 'plus': {
-                            arrow_pos.top += Math.min(elem_height, window_bottom_edge - elem_offset.top);
+                            arrow_offset.top += Math.min(elem_height, window_bottom_edge - elem_offset.top);
                             break;
                         }
                         case 'minus': {
-                            arrow_pos.top += Math.max(0, window_offset.top - elem_offset.top); 
+                            arrow_offset.top += Math.max(0, window_offset.top - elem_offset.top); 
                             break;
                         }
                         case 'center': {
-                            arrow_pos.top += Math.floor(elem_height / 2);
-                            arrow_pos.top = Math.max(
-                                    Math.min(arrow_pos.top, window_bottom_edge), 
+                            arrow_offset.top += Math.floor(elem_height / 2);
+                            arrow_offset.top = Math.max(
+                                    Math.min(arrow_offset.top, window_bottom_edge), 
                                     window_offset.top
                             );
                             break;
                         }
                         default: {
-                            arrow_pos.top += Math.max(parseInt(options.arrow), 0);
+                            arrow_offset.top += Math.max(parseInt(options.arrow), 0);
                         }
                     }
                 }
 
+                tooltip_offset = { top: arrow_offset.top, left: arrow_offset.left };
+                
+                if(tooltip_pos === 'top' || tooltip_pos === 'bottom') {
+                    if(tooltip_pos === 'top')
+                        tooltip_offset.top -= tooltip_height + TT_ARROW_SIZE; 
+
+                    switch(options.window) {
+                        case 'plus': {
+                            tooltip_offset.left = Math.min(arrow_offset.left, window_right_edge - tooltip_width);
+                            break;
+                        }
+                        case 'minus': {
+                            tooltip_offset.left = Math.max(arrow_offset.left - tooltip_width, window_offset.left); 
+                            break;
+                        }
+                        case 'center': {
+                            tooltip_offset.left -= Math.floor(tooltip_width / 2);
+                            tooltip_offset.left = Math.max(
+                                    Math.min(tooltip_offset.left, window_right_edge - tooltip_width), 
+                                    window_offset.left
+                            );
+                            break;
+                        }
+                        default: {
+                            tooltip_offset.left = arrow_offset.left - Math.max(parseInt(options.window), 0);
+                        }
+                    }
+
+                    $arrow.css('left', arrow_offset.left - tooltip_offset.left);
+                } else {
+                    if(tooltip_pos === 'left') 
+                        tooltip_offset.left -= tooltip_width + TT_ARROW_SIZE;
+
+                    switch(options.window) {
+                        case 'plus': {
+                            tooltip_offset.top = Math.min(arrow_offset.top, window_bottom_edge - tooltip_height);
+                            break;
+                        }
+                        case 'minus': {
+                            tooltip_offset.top = Math.max(arrow_offset.top - tooltip_height, window_offset.top); 
+                            break;
+                        }
+                        case 'center': {
+                            tooltip_offset.top -= Math.floor(tooltip_height / 2);
+                            tooltip_offset.top = Math.max(
+                                    Math.min(tooltip_offset.top, window_bottom_edge - tooltip_height), 
+                                    window_offset.top
+                            );
+                            break;
+                        }
+                        default: {
+                            tooltip_offset.top = arrow_offset.top - Math.max(parseInt(options.window), 0);
+                        }
+                    }
+
+                    $arrow.css('top', arrow_offset.top - tooltip_offset.top);
+                }
+            
+                // set arrow direction
+                $arrow.addClass('tt-arrow-' + tooltip_pos);
+
+                // set tooltip position 
+                $tooltip.offset(tooltip_offset);
+
+                // set tootip size
                 $tooltip.outerWidth(tooltip_width).outerHeight(tooltip_height);
+
+                // event handlers for tooltip's components
                 initEvents($tooltip);
+
+                // show tooltip
                 fadeIn($tooltip);
             }
         }    

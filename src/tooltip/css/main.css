@@ -132,11 +132,11 @@
     margin-bottom: 10px;
 }
 
-.tt-arrow-top {
+.tt-arrow-bottom {
     top: -16px;
 }
 
-.tt-arrow-bottom {
+.tt-arrow-top {
     bottom: -16px;
 }
 
@@ -146,11 +146,11 @@
     margin-left: -35px;
 }
 
-.tt-arrow-left {
+.tt-arrow-right {
     left: -16px;
 }
 
-.tt-arrow-right {
+.tt-arrow-left {
     right: -16px;        
 }
 
@@ -176,23 +176,23 @@
     -o-transform:      rotate(45deg);
 }
 
-.tt-arrow-bottom:after {
-    left: 20px;
-    top: -20px;
-}
-
-.tt-arrow-right:after {
-    left: -20px;
-    top: 6px;
+.tt-arrow-top:after {
+    left: 24px;
+    top: -24px;
 }
 
 .tt-arrow-left:after {
+    left: -24px;
+    top: 6px;
+}
+
+.tt-arrow-right:after {
     left: 6px;
     top: 6px;
 }
 
-.tt-arrow-top:after {
-    left: 20px;
+.tt-arrow-bottom:after {
+    left: 24px;
     top: 6px;
 }
 
