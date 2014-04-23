@@ -28,10 +28,15 @@
             },
             submit: {
                 label: 'Add note'
+            },
+            edit: {
+                label: 'Edit note'
             }
         },
         txt: {
-            placeholder: 'Type your note here...'
+            placeholder: 'Type your note here...',
+            attr: '',
+            content: ''
         }
     };
 
@@ -57,7 +62,11 @@
         height: TT_TOOLTIP_HEIGHT,
         
         // initial content of textarea
-        content: ''
+        content: '',
+
+        header: false,
+        
+        editMode: false
     };
 
     var fading_change = 8,
@@ -126,6 +135,20 @@
                     throw new Error('jNottery: Please specify doctype for your document, it\'s required for height calculation');
                 } 
 
+                $.each(['facebook', 'twitter', 'link', 'save'], function(key, val) {
+                    view_defaults['btn'][val]['class'] = 'tt-active';   
+                });
+
+                $.extend(view_defaults['txt'], {
+                    attr: options.editMode ? 'readonly' : '',
+                    content: options.content
+                });
+
+                if(options.editMode)
+                    view_defaults['btn']['submit']['class'] = 'tt-hide';
+                else
+                    view_defaults['btn']['edit']['class'] = 'tt-hide';
+                
                 $(document.body).append(nano(main_view, view_defaults));   
                 $tooltip = $('.tt-tooltip');
                 $arrow = $tooltip.find('.tt-arrow');
@@ -312,6 +335,35 @@
                 // show tooltip
                 fadeIn($tooltip);
             }
-        }    
+        },
+        edit: function(on) {
+            var $tooltip = $('.tt-tooltip'),
+                btn_modifier;
+
+            if($tooltip.length !== 0) {
+                if(!on) {
+                    $tooltip.find('.tt-input').removeProp('readonly');
+                    
+                    btn_modifier = function(key, val) {
+                        $tooltip.find('.tt-' + val).removeClass('tt-active');    
+                    };
+
+                    $tooltip.find('.tt-add').show();
+                    $tooltip.find('.tt-edit').hide();
+                    
+                } else {
+                    $tooltip.find('.tt-input').prop('readonly', true); 
+                    
+                    btn_modifier = function(key, val) {
+                        $tooltip.find('.tt-' + val).addClass('tt-active');    
+                    };
+                    
+                    $tooltip.find('.tt-add').hide();
+                    $tooltip.find('.tt-edit').show();
+                }
+
+                $.each(['facebook', 'twitter', 'link', 'save'], btn_modifier);
+            }
+        }
     });
 })(window.tt, window.jQuery);

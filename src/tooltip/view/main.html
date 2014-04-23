@@ -40,8 +40,9 @@
         </div>
         <div class="tt-form">
             <div class="tt-content">
-                <textarea class="tt-input" placeholder="{txt.placeholder}" autocomplete="off" rows="3"></textarea>
-                <input class="tt-add {btn.submit.class}" type="submit" value="{btn.submit.label}"/>
+                <textarea class="tt-input" placeholder="{txt.placeholder}" autocomplete="off" rows="3" {txt.attr}>{txt.content}</textarea>
+                <input class="tt-submit tt-add {btn.submit.class}" type="submit" value="{btn.submit.label}"/>
+                <input class="tt-submit tt-edit {btn.edit.class}" type="submit" value="{btn.edit.label}"/>
             </div>
         </div>
     </div>
