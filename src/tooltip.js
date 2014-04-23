@@ -214,7 +214,9 @@
                 
                 if(tooltip_pos === 'top' || tooltip_pos === 'bottom') {
                     if(tooltip_pos === 'top')
-                        tooltip_offset.top -= tooltip_height + TT_ARROW_SIZE; 
+                        tooltip_offset.top -= tooltip_height + TT_ARROW_SIZE;
+                    else
+                        tooltip_offset.top += TT_ARROW_SIZE;
 
                     switch(options.window) {
                         case 'plus': {
@@ -255,7 +257,9 @@
                 } else {
                     if(tooltip_pos === 'left') 
                         tooltip_offset.left -= tooltip_width + TT_ARROW_SIZE;
-
+                    else
+                        tooltip_offset.left += TT_ARROW_SIZE;
+                    
                     switch(options.window) {
                         case 'plus': {
                             tooltip_offset.top = Math.min(arrow_offset.top, window_bottom_edge - tooltip_height);
