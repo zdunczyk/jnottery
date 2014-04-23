@@ -141,9 +141,9 @@
 }
 
 .tt-arrow-top, .tt-arrow-bottom {
-    width: 70px;
+    width: 32px;
     height: 16px;
-    margin-left: -35px;
+    margin-left: -20px;
 }
 
 .tt-arrow-right {
@@ -155,9 +155,9 @@
 }
 
 .tt-arrow-left, .tt-arrow-right {
-    height: 70px;
+    height: 32px;
     width: 16px;
-    margin-top: -25px;
+    margin-top: -20px;
 }
 
 .tt-arrow {
@@ -177,23 +177,19 @@
 }
 
 .tt-arrow-top:after {
-    left: 24px;
     top: -24px;
 }
 
 .tt-arrow-left:after {
     left: -24px;
-    top: 6px;
 }
 
 .tt-arrow-right:after {
-    left: 6px;
-    top: 6px;
+    left: 8px;
 }
 
 .tt-arrow-bottom:after {
-    left: 24px;
-    top: 6px;
+    top: 8px;
 }
 
 .tt-arrow:after, .tt-tooltip {

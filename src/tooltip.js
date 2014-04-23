@@ -3,9 +3,10 @@
 
 (function(tt, $) { 
 
-    var TT_TOOLTIP_WIDTH = 270,
-        TT_TOOLTIP_HEIGHT = 170,
-        TT_ARROW_SIZE = 20;
+    var TT_TOOLTIP_WIDTH = 280,
+        TT_TOOLTIP_HEIGHT = 180,
+        TT_ARROW_SIZE = 20,
+        TT_ARROW_MARGIN = 30;
 
     // default parameters passed to tooltip's view
     var view_defaults = {
@@ -236,8 +237,21 @@
                             tooltip_offset.left = arrow_offset.left - Math.max(parseInt(options.window), 0);
                         }
                     }
+                    
+                    var arrow_inner_left = arrow_offset.left - tooltip_offset.left,
+                        left_margin = TT_ARROW_MARGIN - arrow_inner_left,
+                        right_margin = arrow_inner_left - (tooltip_width - TT_ARROW_MARGIN);
 
-                    $arrow.css('left', arrow_offset.left - tooltip_offset.left);
+                    if(left_margin > 0) {
+                        tooltip_offset.left -= left_margin;
+                        arrow_inner_left = TT_ARROW_MARGIN;
+                    } else if(right_margin > 0) {
+                        tooltip_offset.left += right_margin;
+                        arrow_inner_left = tooltip_width - TT_ARROW_MARGIN;
+                    }
+                    
+                    $arrow.css('left', arrow_inner_left);
+                    
                 } else {
                     if(tooltip_pos === 'left') 
                         tooltip_offset.left -= tooltip_width + TT_ARROW_SIZE;
@@ -264,7 +278,19 @@
                         }
                     }
 
-                    $arrow.css('top', arrow_offset.top - tooltip_offset.top);
+                    var arrow_inner_top = arrow_offset.top - tooltip_offset.top,
+                        top_margin = TT_ARROW_MARGIN - arrow_inner_top,
+                        bottom_margin = arrow_inner_top - (tooltip_height - TT_ARROW_MARGIN);
+
+                    if(top_margin > 0) {
+                        tooltip_offset.top -= top_margin;
+                        arrow_inner_top = TT_ARROW_MARGIN;
+                    } else if(bottom_margin > 0) {
+                        tooltip_offset.top += bottom_margin;
+                        arrow_inner_top = tooltip_height - TT_ARROW_MARGIN;
+                    }
+                    
+                    $arrow.css('top', arrow_inner_top);
                 }
             
                 // set arrow direction
