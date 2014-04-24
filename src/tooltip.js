@@ -40,6 +40,18 @@
         }
     };
 
+    var events = {
+        click: {
+            'tt.btn.facebook': '.tt-facebook',
+            'tt.btn.twitter': '.tt-twitter',
+            'tt.btn.link': '.tt-link',
+            'tt.btn.save': '.tt-save',
+            'tt.btn.submit': '.tt-add',
+            'tt.btn.edit': '.tt-edit',
+            'tt.btn.close': '.tt-close'
+        }    
+    };
+
     var defaults = {
         // show tooltip on the right or top
         // left/top/right/bottom/auto
@@ -101,13 +113,23 @@
     }
 
     function initEvents($tooltip) {
-        $tooltip.on('tt.close', function() {
+        $tooltip.on('tt.btn.close.click', function() {
             fadeOut($(this));     
         });
 
-        $tooltip.find('.tt-close').on('click', function() {
-            $tooltip.trigger('tt.close');    
-        });
+        for(var type in events) {
+            if(events.hasOwnProperty(type)) {
+                for(var name in events[type]) {
+                    if(events[type].hasOwnProperty(name)) {
+                        (function(name, type) {
+                            $tooltip.find(events[type][name]).on(type, function() {
+                                $tooltip.trigger(name + '.' + type);    
+                            });
+                        })(name, type); 
+                    }
+                }
+            }
+        }
     }
 
     tt.tooltip = $.extend(tt.tooltip || {}, {
@@ -334,6 +356,8 @@
 
                 // show tooltip
                 fadeIn($tooltip);
+
+                return $tooltip;
             }
         },
         edit: function(on) {
