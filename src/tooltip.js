@@ -6,7 +6,8 @@
     var TT_TOOLTIP_WIDTH = 280,
         TT_TOOLTIP_HEIGHT = 180,
         TT_ARROW_SIZE = 20,
-        TT_ARROW_MARGIN = 30;
+        TT_ARROW_MARGIN = 30,
+        $tooltip;
 
     // default parameters passed to tooltip's view
     var view_defaults = {
@@ -132,13 +133,18 @@
         }
     }
 
+    function open() {
+        return typeof $tooltip !== 'undefined';
+    }
+
     tt.tooltip = $.extend(tt.tooltip || {}, {
         open: function(options) {
             if(typeof main_view !== 'undefined') {
                 options = $.extend({}, defaults, options); 
 
-                var $tooltip,
-                    $arrow,
+                this.root = options.root;
+
+                var $arrow,
                     elem_width = options.root.outerWidth(),
                     elem_height = options.root.outerHeight(),
                     elem_offset = options.root.offset(),
@@ -361,10 +367,9 @@
             }
         },
         edit: function(on) {
-            var $tooltip = $('.tt-tooltip'),
-                btn_modifier;
+            var btn_modifier;
 
-            if($tooltip.length !== 0) {
+            if(open() && $tooltip.length !== 0) {
                 if(!on) {
                     $tooltip.find('.tt-input').removeProp('readonly');
                     
@@ -388,6 +393,18 @@
 
                 $.each(['facebook', 'twitter', 'link', 'save'], btn_modifier);
             }
+        },
+        content: function(val) {
+            var $input;
+
+            if(open()) {
+                $input = $tooltip.find('.tt-input');
+                if(typeof val === 'undefined')
+                    return $input.val();
+
+                $input.val(val);
+            }
+            return val;
         }
     });
 })(window.tt, window.jQuery);
