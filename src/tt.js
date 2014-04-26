@@ -23,10 +23,10 @@
                 }, options));
 
                 tooltip
-                    .on('tt.btn.edit.click', function() {
+                    .on('btn.edit.click.tt', function() {
                         tt.tooltip.edit(false);    
                     })
-                    .on('tt.btn.submit.click', function() {
+                    .on('btn.submit.click.tt', function() {
                         tt.tooltip.edit(true);
 
                         if(!edit_mode)

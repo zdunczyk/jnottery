@@ -43,13 +43,13 @@
 
     var events = {
         click: {
-            'tt.btn.facebook': '.tt-facebook',
-            'tt.btn.twitter': '.tt-twitter',
-            'tt.btn.link': '.tt-link',
-            'tt.btn.save': '.tt-save',
-            'tt.btn.submit': '.tt-add',
-            'tt.btn.edit': '.tt-edit',
-            'tt.btn.close': '.tt-close'
+            'btn.facebook': '.tt-facebook',
+            'btn.twitter': '.tt-twitter',
+            'btn.link': '.tt-link',
+            'btn.save': '.tt-save',
+            'btn.submit': '.tt-add',
+            'btn.edit': '.tt-edit',
+            'btn.close': '.tt-close'
         }    
     };
 
@@ -114,8 +114,12 @@
     }
 
     function initEvents($tooltip) {
-        $tooltip.on('tt.btn.close.click', function() {
-            fadeOut($(this));     
+        $tooltip.on('btn.close.click.tt', function() {
+            $(this).trigger('close.tt');
+        });
+        
+        $tooltip.on('close.tt', function() {
+            fadeOut($(this));
         });
 
         for(var type in events) {
@@ -124,7 +128,7 @@
                     if(events[type].hasOwnProperty(name)) {
                         (function(name, type) {
                             $tooltip.find(events[type][name]).on(type, function() {
-                                $tooltip.trigger(name + '.' + type);    
+                                $tooltip.trigger(name + '.' + type + '.tt');    
                             });
                         })(name, type); 
                     }
@@ -138,6 +142,10 @@
     }
 
     tt.tooltip = $.extend(tt.tooltip || {}, {
+        close: function() {
+            if(typeof $tooltip !== 'undefined')
+                $tooltip.trigger('close.tt'); 
+        },
         open: function(options) {
             if(typeof main_view !== 'undefined') {
                 options = $.extend({}, defaults, options); 
@@ -176,9 +184,15 @@
                     view_defaults['btn']['submit']['class'] = 'tt-hide';
                 else
                     view_defaults['btn']['edit']['class'] = 'tt-hide';
+               
+                if(typeof $tooltip === 'undefined') {
+                    $(document.body).append(nano(main_view, view_defaults));   
+                    $tooltip = $('.tt-tooltip');
+                    
+                    // event handlers for tooltip's components
+                    initEvents($tooltip);
+                }
                 
-                $(document.body).append(nano(main_view, view_defaults));   
-                $tooltip = $('.tt-tooltip');
                 $arrow = $tooltip.find('.tt-arrow');
 
                 if(tooltip_pos === 'auto') {
@@ -303,7 +317,7 @@
                         arrow_inner_left = tooltip_width - TT_ARROW_MARGIN;
                     }
                     
-                    $arrow.css('left', arrow_inner_left);
+                    $arrow.css({ left: arrow_inner_left, top: '' });
                     
                 } else {
                     if(tooltip_pos === 'left') 
@@ -345,20 +359,17 @@
                         arrow_inner_top = tooltip_height - TT_ARROW_MARGIN;
                     }
                     
-                    $arrow.css('top', arrow_inner_top);
+                    $arrow.css({ top: arrow_inner_top, left: '' });
                 }
             
                 // set arrow direction
-                $arrow.addClass('tt-arrow-' + tooltip_pos);
-
+                $arrow.removeClass().addClass('tt-arrow').addClass('tt-arrow-' + tooltip_pos);
+                
                 // set tooltip position 
-                $tooltip.offset(tooltip_offset);
+                $tooltip.css(tooltip_offset);
 
                 // set tootip size
                 $tooltip.outerWidth(tooltip_width).outerHeight(tooltip_height);
-
-                // event handlers for tooltip's components
-                initEvents($tooltip);
 
                 // show tooltip
                 fadeIn($tooltip);
