@@ -190,20 +190,19 @@
                 
                 var $btns = find('btn'),
                     $add = find('add'),
-                    $edit = find('edit'),
-                    hide_class = 'tt-hide';
+                    $edit = find('edit');
             
                 if(options.editMode && options.content.length > 0)
                     $btns.addClass('tt-active');
                 else
                     $btns.removeClass('tt-active');
-
+                
                 if(options.editMode) {
-                    $add.addClass(hide_class);
-                    $edit.removeClass(hide_class);
+                    $add.hide();
+                    $edit.show();
                 } else {
-                    $edit.addClass(hide_class);
-                    $add.removeClass(hide_class);
+                    $add.show();
+                    $edit.hide();
                 }
                 
                 $arrow = find('arrow');
