@@ -14,7 +14,8 @@
                         longUrl: long_url 
                     },
                     function(response) {
-                        callback(decodeURIComponent(response.data.url));
+                        if(response.status_code === 200)
+                            callback(decodeURIComponent(response.data.url));
                     }
                 );
             }    
