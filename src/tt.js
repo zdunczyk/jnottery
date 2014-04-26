@@ -34,7 +34,7 @@
                         else
                             tt.core.editElementNote(tt.tooltip.root, first_note, tt.tooltip.content()); 
                         
-                        tt.core.merge();
+                        tt.core.updateHash();
                     });
                 
                 return this;

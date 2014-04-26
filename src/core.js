@@ -98,9 +98,13 @@
             var hash_decoded,
                 elements = [],
                 note;
+           
+            options = $.extend({
+                hash: window.location.hash.slice(1) 
+            }, options);
             
-            if(window.location.hash !== '') {
-                hash_decoded = rayson.b64.decode(window.location.hash.slice(1), Base64.decode);
+            if(options.hash !== '') {
+                hash_decoded = rayson.b64.decode(options.hash, Base64.decode);
                 
                 hash_decoded = rayson.unserialize(hash_decoded, {
                     // version of encoded data
@@ -158,7 +162,7 @@
                     }
                 }
                 
-                window.location.hash = rayson.b64.encode(rayson.serialize({
+                return rayson.b64.encode(rayson.serialize({
                     version: tt.core.version,
                     selectors: selectors,
                     notes: notes 
@@ -170,11 +174,13 @@
                     content: str,
                     params: str 
                 }), Base64.encode);
-
-                return true;
             }
 
             return false;
+        },
+        updateHash: function() {
+            var hash = this.merge();
+            ($.type(hash) === 'string') && (window.location.hash = hash);
         }
     });
 
