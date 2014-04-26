@@ -43,13 +43,13 @@
 
     var events = {
         click: {
-            'btn.facebook': '.tt-facebook',
-            'btn.twitter': '.tt-twitter',
-            'btn.link': '.tt-link',
-            'btn.save': '.tt-save',
-            'btn.submit': '.tt-add',
-            'btn.edit': '.tt-edit',
-            'btn.close': '.tt-close'
+            'btn.facebook': 'facebook',
+            'btn.twitter': 'twitter',
+            'btn.link': 'link',
+            'btn.save': 'save',
+            'btn.submit': 'add',
+            'btn.edit': 'edit',
+            'btn.close': 'close'
         }    
     };
 
@@ -84,6 +84,10 @@
 
     var fading_change = 8,
         fading_speed = 200;
+
+    function find(class_suffix) {
+        return $tooltip.find('.tt-' + class_suffix);
+    }
 
     function fadeIn($element) {
         $element
@@ -128,7 +132,7 @@
                 for(var name in events[type]) {
                     if(events[type].hasOwnProperty(name)) {
                         (function(name, type) {
-                            $tooltip.find(events[type][name]).on(type, function() {
+                            find(events[type][name]).on(type, function() {
                                 $tooltip.trigger(name + '.' + type + '.tt');    
                             });
                         })(name, type); 
@@ -171,30 +175,38 @@
                 if(document.doctype === null || screen.height < parseInt(window_height)) {
                     throw new Error('jNottery: Please specify doctype for your document, it\'s required for height calculation');
                 } 
-
-                $.each(['facebook', 'twitter', 'link', 'save'], function(key, val) {
-                    view_defaults['btn'][val]['class'] = 'tt-active';   
-                });
-
-                $.extend(view_defaults['txt'], {
-                    attr: options.editMode ? 'readonly' : '',
-                    content: options.content
-                });
-
-                if(options.editMode)
-                    view_defaults['btn']['submit']['class'] = 'tt-hide';
-                else
-                    view_defaults['btn']['edit']['class'] = 'tt-hide';
                
                 if(typeof $tooltip === 'undefined') {
-                    $(document.body).append(nano(main_view, view_defaults));   
-                    $tooltip = $('.tt-tooltip');
+                    $tooltip = $(nano(main_view, view_defaults));
+                    $(document.body).append($tooltip);   
                     
                     // event handlers for tooltip's components
                     initEvents($tooltip);
                 }
+
+                find('input')
+                    .prop('readonly', options.editMode) 
+                    .val(options.content);
                 
-                $arrow = $tooltip.find('.tt-arrow');
+                var $btns = find('btn'),
+                    $add = find('add'),
+                    $edit = find('edit'),
+                    hide_class = 'tt-hide';
+            
+                if(options.editMode && options.content.length > 0)
+                    $btns.addClass('tt-active');
+                else
+                    $btns.removeClass('tt-active');
+
+                if(options.editMode) {
+                    $add.addClass(hide_class);
+                    $edit.removeClass(hide_class);
+                } else {
+                    $edit.addClass(hide_class);
+                    $add.removeClass(hide_class);
+                }
+                
+                $arrow = find('arrow');
 
                 if(tooltip_pos === 'auto') {
                         // position where minimum of tooltip is out of the screen
@@ -383,24 +395,24 @@
 
             if(open() && $tooltip.length !== 0) {
                 if(!on) {
-                    $tooltip.find('.tt-input').removeProp('readonly');
+                    find('input').removeProp('readonly');
                     
                     btn_modifier = function(key, val) {
-                        $tooltip.find('.tt-' + val).removeClass('tt-active');    
+                        find(val).removeClass('tt-active');    
                     };
 
-                    $tooltip.find('.tt-add').show();
-                    $tooltip.find('.tt-edit').hide();
+                    find('add').show();
+                    find('edit').hide();
                     
                 } else {
-                    $tooltip.find('.tt-input').prop('readonly', true); 
+                    find('input').prop('readonly', true); 
                     
                     btn_modifier = function(key, val) {
-                        $tooltip.find('.tt-' + val).addClass('tt-active');    
+                        find(val).addClass('tt-active');    
                     };
                     
-                    $tooltip.find('.tt-add').hide();
-                    $tooltip.find('.tt-edit').show();
+                    find('add').hide();
+                    find('edit').show();
                 }
 
                 $.each(['facebook', 'twitter', 'link', 'save'], btn_modifier);
@@ -410,7 +422,7 @@
             var $input;
 
             if(open()) {
-                $input = $tooltip.find('.tt-input');
+                $input = find('input');
                 if(typeof val === 'undefined')
                     return $input.val();
 
