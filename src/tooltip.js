@@ -92,6 +92,7 @@
             .css('top', '+=' + (fading_change/2))
             .css('left', '+=' + (fading_change/2))
             .css('display', 'block')
+        .stop()
         .animate({
             width: '+=' + fading_change,
             height: '+=' + fading_change,
@@ -102,7 +103,7 @@
     }
 
     function fadeOut($element) {
-        $element.animate({
+        $element.stop().animate({
             width: '-=' + fading_change,
             height: '-=' + fading_change,
             top: '+=' + (fading_change/2),
