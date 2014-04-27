@@ -79,7 +79,10 @@
 
         header: false,
         
-        editMode: false
+        editMode: false,
+
+        // callbacks
+        init: false
     };
 
     var fading_change = 8,
@@ -182,6 +185,9 @@
                     
                     // event handlers for tooltip's components
                     initEvents($tooltip);
+
+                    if($.type(options.init) === 'function') 
+                        options.init($tooltip);
                 }
 
                 find('input')
