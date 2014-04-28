@@ -9,6 +9,11 @@
     var TT_ELEMENT = 0;
    
     var pending_notes = {};
+
+    var rayson_keymap = {
+        root: [ 'version', 'selectors', 'notes' ],
+        notes: [ 'type', 'selector', 'content', 'params' ]
+    };
         
     function Note(type, content, params) {
         $.extend(this, {
@@ -119,7 +124,7 @@
                         content: str,
                         params: [ str ]
                     }]
-                });
+                }, rayson_keymap);
                 
                 for(var s = 0; s < hash_decoded.selectors.length; s++) {
                     elements.push($.xJQ(hash_decoded.selectors[s]));
@@ -173,7 +178,7 @@
                     selector: int8,
                     content: str,
                     params: str 
-                }), Base64.encode);
+                }, rayson_keymap), Base64.encode);
             }
 
             return false;
