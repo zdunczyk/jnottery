@@ -173,7 +173,25 @@
                     window_height = $(window).height(),
                     window_offset = { top: $(window).scrollTop(), left: $(window).scrollLeft() },
                     window_bottom_edge = window_offset.top + window_height,
-                    window_right_edge = window_offset.left + window_width;
+                    window_right_edge = window_offset.left + window_width,
+                    has_container = options.container instanceof $;
+
+                if(has_container) {
+                    var cont_offset = options.container.offset(),
+                        cont_width = options.container.outerWidth(),
+                        cont_height = options.container.outerHeight(),
+                        cont_bottom_edge = cont_offset.top + cont_height,
+                        cont_right_edge = cont_offset.left + cont_width;
+
+                    if(cont_right_edge < elem_offset.left)
+                        tooltip_pos = 'left';
+                    else if(cont_offset.left > (elem_offset.left + elem_width))
+                        tooltip_pos = 'right';
+                    else if(cont_bottom_edge < (elem_offset.top + (elem_height / 2)))
+                        tooltip_pos = 'top';
+                    else
+                        tooltip_pos = 'bottom';
+                }
 
                 if(document.doctype === null || screen.height < parseInt(window_height)) {
                     throw new Error('jNottery: Please specify doctype for your document, it\'s required for height calculation');
@@ -213,7 +231,7 @@
                 
                 $arrow = find('arrow');
 
-                if(tooltip_pos === 'auto') {
+                if(tooltip_pos === 'auto' && !has_container) {
                         // position where minimum of tooltip is out of the screen
                     var min_cutting,
                         // min space where tooltip is fully visible
@@ -293,6 +311,39 @@
                     }
                 }
 
+                if(has_container) {
+                    switch(tooltip_pos) {
+                        case 'right': {
+                            arrow_offset.left = cont_offset.left;        
+                            break;
+                        }
+                        case 'left': {
+                            arrow_offset.left = cont_right_edge;            
+                            break;
+                        }
+                        case 'top': {
+                            arrow_offset.top = cont_bottom_edge;        
+                            break;
+                        }
+                        case 'bottom': {
+                            arrow_offset.top = cont_offset.top;
+                            break;
+                        }
+                    }
+
+                    if(tooltip_pos === 'right' || tooltip_pos === 'left') {
+                        arrow_offset.top = Math.max(
+                            Math.min(arrow_offset.top, cont_bottom_edge - TT_ARROW_MARGIN), 
+                            cont_offset.top + TT_ARROW_MARGIN
+                        );
+                    } else {
+                        arrow_offset.left = Math.max(
+                            Math.min(arrow_offset.left, cont_right_edge - TT_ARROW_MARGIN), 
+                            cont_offset.left + TT_ARROW_MARGIN
+                        );
+                    }
+                }
+
                 tooltip_offset = { top: arrow_offset.top, left: arrow_offset.left };
                 
                 if(tooltip_pos === 'top' || tooltip_pos === 'bottom') {
@@ -321,6 +372,13 @@
                         default: {
                             tooltip_offset.left = arrow_offset.left - Math.max(parseInt(options.window), 0);
                         }
+                    }
+
+                    if(has_container) {
+                        tooltip_offset.left = Math.max(
+                                Math.min(tooltip_offset.left, cont_right_edge - tooltip_width), 
+                                cont_offset.left
+                        );                        
                     }
                     
                     var arrow_inner_left = arrow_offset.left - tooltip_offset.left,
@@ -363,6 +421,13 @@
                         default: {
                             tooltip_offset.top = arrow_offset.top - Math.max(parseInt(options.window), 0);
                         }
+                    }
+
+                    if(has_container) {
+                        tooltip_offset.top = Math.max(
+                                Math.min(tooltip_offset.top, cont_bottom_edge - tooltip_height), 
+                                cont_offset.top
+                        );                        
                     }
 
                     var arrow_inner_top = arrow_offset.top - tooltip_offset.top,
