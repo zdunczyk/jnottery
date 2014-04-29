@@ -79,7 +79,7 @@
 
         header: false,
         
-        editMode: false,
+        edit: undefined,
 
         // callbacks
         init: false
@@ -121,13 +121,9 @@
         });        
     }
 
-    function initEvents($tooltip) {
-        $tooltip.on('btn.close.click.tt', function() {
-            $(this).trigger('close.tt');
-        });
-        
-        $tooltip.on('close.tt', function() {
-            fadeOut($(this));
+    function reattachEvents($tooltip, params) {
+        $tooltip.off('btn.close.click.tt').on('btn.close.click.tt', function() {
+            $(this).trigger('close.tt', [ params ]);
         });
 
         for(var type in events) {
@@ -135,8 +131,8 @@
                 for(var name in events[type]) {
                     if(events[type].hasOwnProperty(name)) {
                         (function(name, type) {
-                            find(events[type][name]).on(type, function() {
-                                $tooltip.trigger(name + '.' + type + '.tt');    
+                            find(events[type][name]).off(type).on(type, function() {
+                                $tooltip.trigger(name + '.' + type + '.tt', [ params ]);    
                             });
                         })(name, type); 
                     }
@@ -145,6 +141,12 @@
         }
     }
 
+    function attachEvents($tooltip) {
+        $tooltip.on('close.tt', function() {
+            fadeOut($(this));
+        });
+    }
+    
     function open() {
         return typeof $tooltip !== 'undefined';
     }
@@ -157,8 +159,6 @@
         open: function(options) {
             if(typeof main_view !== 'undefined') {
                 options = $.extend({}, defaults, options); 
-
-                this.root = options.root;
 
                 var $arrow,
                     elem_width = options.root.outerWidth(),
@@ -202,26 +202,31 @@
                     $(document.body).append($tooltip);   
                     
                     // event handlers for tooltip's components
-                    initEvents($tooltip);
+                    attachEvents($tooltip);
 
                     if($.type(options.init) === 'function') 
                         options.init($tooltip);
                 }
 
+                reattachEvents($tooltip, {
+                    root: options.root,
+                    edit: options.edit 
+                });
+
                 find('input')
-                    .prop('readonly', options.editMode) 
+                    .prop('readonly', !!options.edit) 
                     .val(options.content);
                 
                 var $btns = find('btn'),
                     $add = find('add'),
                     $edit = find('edit');
             
-                if(options.editMode && options.content.length > 0)
+                if(!!options.edit && options.content.length > 0)
                     $btns.addClass('tt-active');
                 else
                     $btns.removeClass('tt-active');
                 
-                if(options.editMode) {
+                if(!!options.edit) {
                     $add.hide();
                     $edit.show();
                 } else {
