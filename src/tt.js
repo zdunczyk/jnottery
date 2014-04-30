@@ -65,6 +65,9 @@
                 return this;
             },
             init: function(options) {
+                if(!rangy.initialized)
+                    rangy.init();
+                
                 tt.core.init($.extend({}, { root: $(this) }, options));
 
                 if(options && options.vendor)
