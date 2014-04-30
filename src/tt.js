@@ -68,7 +68,7 @@
                 tt.core.init($.extend({}, { root: $(this) }, options));
 
                 if(options && options.vendor)
-                    tt.core.vendor(options.vendor);
+                    tt.vendor.init(options.vendor);
 
                 return this;
             }
