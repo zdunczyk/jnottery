@@ -141,6 +141,32 @@
         }
     }
 
+    function outerBoundary(collection) {
+        var result = {};
+
+        collection.each(function() {
+            var width = $(this).outerWidth(),
+                height = $(this).outerHeight(),
+                offset = $(this).offset();
+
+            if(typeof result.left === 'undefined' || offset.left < result.left)
+                result.left = offset.left;
+
+            if(typeof result.top === 'undefined' || offset.top < result.top)
+                result.top = offset.top;
+
+            if(typeof result.right === 'undefined' || (offset.left + width) > result.right)
+                result.right = offset.left + width;
+
+            if(typeof result.bottom === 'undefined' || (offset.top + height) > result.bottom)
+                result.bottom = offset.top + height;
+        });
+
+        result.width = result.right - result.left;
+        result.height = result.bottom - result.top;
+        return result;
+    }
+
     function attachEvents($tooltip) {
         $tooltip.on('close.tt', function() {
             fadeOut($(this));
@@ -161,9 +187,10 @@
                 options = $.extend({}, defaults, options); 
 
                 var $arrow,
-                    elem_width = options.root.outerWidth(),
-                    elem_height = options.root.outerHeight(),
-                    elem_offset = options.root.offset(),
+                    elem_boundary = outerBoundary(options.root),
+                    elem_width = elem_boundary.width,
+                    elem_height = elem_boundary.height,
+                    elem_offset = { top: elem_boundary.top, left: elem_boundary.left },
                     tooltip_width = Math.max(options.width, TT_TOOLTIP_WIDTH),
                     tooltip_height = Math.max(options.height, TT_TOOLTIP_HEIGHT),
                     tooltip_pos = options.position,
