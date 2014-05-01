@@ -8,16 +8,21 @@
 
         return $.extend({}, $obj, {
             tooltip: function(options) {
-                var notes = tt.core.getElementNotes($(this)),
+                var first_note,
                     tooltip;
                 
                 // stick to one note per element
-                for(var first_note in notes) if(notes.hasOwnProperty(first_note)) break; 
-                
+                $.each(tt.core.getNotes($(this)), function(id, note) {
+                    if(note instanceof tt.core.ElementNote) {
+                        first_note = note; 
+                        return false;
+                    }
+                });
+
                 tooltip = tt.tooltip.open($.extend({}, { 
                     root: $(this),
-                    edit: first_note,
-                    content: (!!first_note ? notes[first_note].content : ''),
+                    edit: (first_note ? first_note.id : undefined),
+                    content: (first_note ? first_note.getContent() : ''),
                     init: function(tooltip) {
 
                         tooltip.on({
@@ -28,9 +33,9 @@
                                 tt.tooltip.edit(true);
                                 
                                 if(!tooltip.edit)
-                                    tooltip.edit = tt.core.addElementNote(tooltip.root, tt.tooltip.content());
+                                    tooltip.edit = tt.core.addNote(new tt.core.ElementNote(tooltip.root, tt.tooltip.content()));
                                 else
-                                    tt.core.editElementNote(tooltip.root, tooltip.edit, tt.tooltip.content()); 
+                                    tt.core.getNote(tooltip.root, tooltip.edit).setContent(tt.tooltip.content()); 
                                 
                                 tt.core.updateHash();
                             },

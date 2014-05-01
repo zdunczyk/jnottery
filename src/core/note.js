@@ -58,6 +58,9 @@
         },
         setContent: function(txt) {
             this.content = txt;
+        },
+        getContent: function() {
+            return this.content;
         }
     };
        
