@@ -14,7 +14,11 @@
             obj_type;
         
         if(obj instanceof tt.core.Note) {
-            $obj = obj.element;
+            if(obj instanceof tt.core.SelectionNote)
+                $obj = tt.range.getElements(obj.range);
+            else
+                $obj = obj.element;
+                
             target = obj;
             obj_type = OBJ_NOTE;
         } else if(obj.tt_selection && obj.tt_selection instanceof tt.core.Selection) {
