@@ -1,7 +1,14 @@
 // jNottery (c) 2014, Tomasz Zduńczyk <tomasz@zdunczyk.org>
 // Released under the MIT license.
 
-(function(tt, $) {
+(function(tt, $, rayson, rangy) {
+    rangy.config = {
+        alertOnFail: false,
+        alertOnWarn: false,
+        checkSelectionRanges: true,
+        preferTextRange: false
+    };
+    
     var str = rayson.type.str,
         raw = rayson.type.raw;
 
@@ -161,4 +168,4 @@
         }
     });
 
-})(window.tt, window.jQuery);
+})(window.tt, window.jQuery, window.rayson, window.rangy);
