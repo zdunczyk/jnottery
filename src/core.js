@@ -87,11 +87,14 @@
                 });
                 
                 $.each(hash_decoded.element_notes, function(i, note) {
-                    (new tt.core.ElementNote(
+                    var note_obj = new tt.core.ElementNote(
                         elements[note.selector],
                         note.content,
                         note.params
-                    )).save();
+                    );
+                    note_obj.save();
+
+                    options.onElementNote && options.onElementNote(note_obj);
                 });
                 
                 $.each(hash_decoded.selection_notes, function(i, note) {
@@ -101,12 +104,15 @@
                     });
                     tt.range.apply(range);
                     
-                    (new tt.core.SelectionNote(
+                    var note_obj = new tt.core.SelectionNote(
                         elements[note.selector],
                         range,
                         note.content,
                         note.params
-                    )).save();
+                    );
+                    note_obj.save();
+
+                    options.onSelectionNote && options.onSelectionNote(note_obj);
                 });
             }
         },
