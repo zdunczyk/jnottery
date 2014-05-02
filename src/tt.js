@@ -2,23 +2,68 @@
 // Released under the MIT license.
 
 (function($) {
+    var OBJ_NOTE = 0,
+        OBJ_SELECTION = 1,
+        OBJ_ELEMENT = 2;
+
+    var last_range = null;
     
-    window.tt = function(selector, context) {
-        var $obj = new $.fn.init(selector, context);
+    window.tt = function(obj, context) {
+        var $obj,
+            target,
+            obj_type;
+        
+        if(obj instanceof tt.core.Note) {
+            $obj = obj.element;
+            target = obj;
+            obj_type = OBJ_NOTE;
+        } else if(obj.tt_selection && obj.tt_selection instanceof tt.core.Selection) {
+            $obj = obj;
+            target = obj.tt_selection;
+            obj_type = OBJ_SELECTION;
+        } else {
+            $obj = new $.fn.init(obj, context);
+            obj_type = OBJ_ELEMENT;
+        }
 
         return $.extend({}, $obj, {
             tooltip: function(options) {
                 var first_note,
-                    tooltip;
+                    tooltip,
+                    add_note_to = $(this),
+                    note_factory = function(content) {
+                        return new tt.core.ElementNote(add_note_to, content); 
+                    };
                 
+                last_range && tt.range.clear(last_range);
+               
                 // stick to one note per element
-                $.each(tt.core.getNotes($(this)), function(id, note) {
-                    if(note instanceof tt.core.ElementNote) {
-                        first_note = note; 
-                        return false;
+                switch(obj_type) {
+                    case OBJ_NOTE: {
+                        first_note = target;
+                        break;    
                     }
-                });
-
+                    case OBJ_SELECTION: {
+                        add_note_to = target.element;
+                        last_range = target.range;
+            
+                        note_factory = function(content) {
+                            last_range = null;
+                            return new tt.core.SelectionNote(add_note_to, target.range, content); 
+                        };
+                        
+                        break;    
+                    }
+                    default: { 
+                        $.each(tt.core.getNotes($(this)), function(id, note) {
+                            if(note instanceof tt.core.ElementNote) {
+                                first_note = note; 
+                                return false;
+                            }
+                        });
+                    }
+                }
+                        
                 tooltip = tt.tooltip.open($.extend({}, { 
                     root: $(this),
                     edit: (first_note ? first_note.id : undefined),
@@ -29,15 +74,8 @@
                             'btn.edit.click.tt': function() {
                                 tt.tooltip.edit(false);    
                             },
-                            'btn.submit.click.tt': function(e, tooltip) {
+                            'btn.submit.click.tt': function() {
                                 tt.tooltip.edit(true);
-                                
-                                if(!tooltip.edit)
-                                    tooltip.edit = tt.core.addNote(new tt.core.ElementNote(tooltip.root, tt.tooltip.content()));
-                                else
-                                    tt.core.getNote(tooltip.root, tooltip.edit).setContent(tt.tooltip.content()); 
-                                
-                                tt.core.updateHash();
                             },
                             'btn.facebook.click.tt': function() {
                                 tt.vendor.facebook(document.URL);
@@ -66,8 +104,26 @@
                         });
                     }
                 }, options));
+               
+                tooltip.off('submit.tt').on('submit.tt', function(e, tooltip) {
+                    if(!tooltip.edit)
+                        tooltip.edit = tt.core.addNote(note_factory(tt.tooltip.content()));
+                    else
+                        tt.core.getNote(add_note_to, tooltip.edit).setContent(tt.tooltip.content()); 
+                    
+                    tt.core.updateHash();
+                });
 
-                return this;
+                if(obj_type === OBJ_SELECTION) {
+                    tooltip.off('close.tt').on('close.tt', function(e, tooltip) {
+                        if(!tooltip.edit) {
+                            tt.range.clear(target.range);
+                            last_range = null;
+                        }        
+                    });
+                }
+
+                return tooltip;
             },
             init: function(options) {
                 if(!rangy.initialized)
@@ -79,6 +135,16 @@
                     tt.vendor.init(options.vendor);
 
                 return this;
+            },
+            selection: function() {
+                var range = tt.range.getFrom($(this)),
+                    result;
+
+                tt.range.apply(range);
+                result = tt.range.getElements(range); 
+                
+                result.tt_selection = new tt.core.Selection($(this), range);
+                return result;
             }
         });
     };

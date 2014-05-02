@@ -53,6 +53,15 @@
         }    
     };
 
+    var events_propagate = {
+        'btn.close.click': 'close',
+        'btn.submit.click': 'submit'
+    };
+
+    var event_params = {
+        edit: null
+    };
+
     var defaults = {
         // show tooltip on the right or top
         // left/top/right/bottom/auto
@@ -121,24 +130,26 @@
         });        
     }
 
-    function reattachEvents($tooltip, params) {
-        $tooltip.off('btn.close.click.tt').on('btn.close.click.tt', function() {
-            $(this).trigger('close.tt', [ params ]);
+    function attachEvents($tooltip, params) {
+        $.each(events_propagate, function(src, dest) {
+            $tooltip.off(src + '.tt').on(src + '.tt', function() {
+                $(this).trigger(dest + '.tt', [ params ]);
+            });
         });
 
-        for(var type in events) {
-            if(events.hasOwnProperty(type)) {
-                for(var name in events[type]) {
-                    if(events[type].hasOwnProperty(name)) {
-                        (function(name, type) {
-                            find(events[type][name]).off(type).on(type, function() {
-                                $tooltip.trigger(name + '.' + type + '.tt', [ params ]);    
-                            });
-                        })(name, type); 
-                    }
-                }
-            }
-        }
+        $.each(events, function(type, names) {
+            $.each(names, function(name, elem_id) {
+                (function(name, type) {
+                    find(elem_id).off(type).on(type, function() {
+                        $tooltip.trigger(name + '.' + type + '.tt', [ params ]);    
+                    });
+                })(name, type); 
+            });    
+        });
+
+        $tooltip.on('btn.close.click.tt', function() {
+            fadeOut($(this));
+        });
     }
 
     function outerBoundary(collection) {
@@ -166,12 +177,6 @@
         result.height = result.bottom - result.top;
         return result;
     }
-
-    function attachEvents($tooltip) {
-        $tooltip.on('close.tt', function() {
-            fadeOut($(this));
-        });
-    }
     
     function open() {
         return typeof $tooltip !== 'undefined';
@@ -185,6 +190,8 @@
         open: function(options) {
             if(typeof main_view !== 'undefined') {
                 options = $.extend({}, defaults, options); 
+
+                event_params.edit = options.edit; 
 
                 var $arrow,
                     elem_boundary = outerBoundary(options.root),
@@ -229,16 +236,11 @@
                     $(document.body).append($tooltip);   
                     
                     // event handlers for tooltip's components
-                    attachEvents($tooltip);
+                    attachEvents($tooltip, event_params);
 
                     if($.type(options.init) === 'function') 
                         options.init($tooltip);
                 }
-
-                reattachEvents($tooltip, {
-                    root: options.root,
-                    edit: options.edit 
-                });
 
                 find('input')
                     .prop('readonly', !!options.edit) 

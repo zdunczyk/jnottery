@@ -79,14 +79,15 @@
     ElementNote.template = Note.template;
     ElementNote.templateOrder = Note.templateOrder;
 
-    var SelectionNote = extend(Note, function(element, selection, content, params) {
+    var SelectionNote = extend(Note, function(element, range, content, params) {
         Note.call(this, element, content, params); 
-        this.selection = selection;
+        this.range = range;
     });
 
     SelectionNote.prototype.values = function() {
+        var selection = tt.range.serialize(this.element, this.range);
         return {
-            selection: this.selection,
+            selection: (selection ? [ selection.start, selection.end ] : []),
             content: this.content,
             params: this.params
         };    

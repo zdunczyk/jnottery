@@ -117,6 +117,14 @@
         },
         clear: function(range) {
             getApplier().undoToRange(range); 
+        },
+        equals: function(r1, r2) {
+            return (
+                r1.startContainer === r2.startContainer
+             && r1.endContainer === r2.endContainer
+             && r1.startOffset === r2.startOffset
+             && r1.endOffset === r2.endOffset
+            ); 
         }
     });
     

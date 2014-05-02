@@ -12,6 +12,13 @@
         
         // internals
         ID_PREFIX: 'ttid',
+
+        Selection: function(element, range) {
+            $.extend(this, {
+                element: element,
+                range: range
+            });
+        },    
         
         pendingNotes: {},
 
@@ -88,9 +95,15 @@
                 });
                 
                 $.each(hash_decoded.selection_notes, function(i, note) {
-                    (new tt.core.ElementNote(
+                    var range = tt.range.unserialize(elements[note.selector], {
+                        start: note.selection[0],
+                        end: note.selection[1]
+                    });
+                    tt.range.apply(range);
+                    
+                    (new tt.core.SelectionNote(
                         elements[note.selector],
-                        note.selection,
+                        range,
                         note.content,
                         note.params
                     )).save();
