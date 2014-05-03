@@ -11,7 +11,7 @@
 
     // default parameters passed to tooltip's view
     var view_defaults = {
-        header: 'Add new note <a>(read more)</a>',
+        title: 'Add note',
         btn: {
             close: '&#10006;',
             disabled: 'Add note first!',
@@ -86,7 +86,7 @@
         // initial content of textarea
         content: '',
 
-        header: false,
+        title: false,
         
         edit: undefined,
 
@@ -488,12 +488,13 @@
                 options = $.extend({}, defaults, options);
 
                 var $arrow,
-                    params = processOptions(options);
+                    params = processOptions(options),
+                    view_options = $.extend({}, view_defaults, options.view);
                 
                 event_params.edit = options.edit; 
                
                 if(typeof $tooltip === 'undefined') {
-                    $tooltip = $(nano(main_view, view_defaults));
+                    $tooltip = $(nano(main_view, view_options));
                     $(document.body).append($tooltip);   
                     
                     // event handlers for tooltip's components
@@ -501,6 +502,10 @@
 
                     if($.type(options.init) === 'function') 
                         options.init($tooltip);
+
+                // only title is reupdated!
+                } else if(view_options.title) {
+                    this.title(view_options.title);
                 }
 
                 find('input')
@@ -595,6 +600,9 @@
         },
         arrowPosition: function(options) {
             return processOptions($.extend({}, defaults, options)).arrow_offset;
+        },
+        title: function(txt) {
+            find('title').text(txt);    
         }
     });
 })(window.tt, window.jQuery);
