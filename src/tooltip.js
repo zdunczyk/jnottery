@@ -250,18 +250,18 @@
                     
             switch(arrow_pos) {
                 case 'plus': {
-                    arrow_offset.left += Math.min(target.width, win.right - target.left);
+                    arrow_offset.left += Math.min(target.width, win.right - target.left - TT_ARROW_MARGIN);
                     break;
                 }
                 case 'minus': {
-                    arrow_offset.left += Math.max(0, win.left - target.left); 
+                    arrow_offset.left += Math.max(0, win.left - target.left + TT_ARROW_MARGIN); 
                     break;
                 }
                 case 'center': {
                     arrow_offset.left += Math.floor(target.width / 2);
                     arrow_offset.left = Math.max(
-                            Math.min(arrow_offset.left, win.right), 
-                            win.left
+                            Math.min(arrow_offset.left, win.right - TT_ARROW_MARGIN), 
+                            win.left + TT_ARROW_MARGIN
                     );
                     break;
                 }
@@ -275,18 +275,18 @@
 
             switch(arrow_pos) {
                 case 'plus': {
-                    arrow_offset.top += Math.min(target.height, win.bottom - target.top);
+                    arrow_offset.top += Math.min(target.height, win.bottom - target.top - TT_ARROW_MARGIN);
                     break;
                 }
                 case 'minus': {
-                    arrow_offset.top += Math.max(0, win.top - target.top); 
+                    arrow_offset.top += Math.max(0, win.top - target.top + TT_ARROW_MARGIN); 
                     break;
                 }
                 case 'center': {
                     arrow_offset.top += Math.floor(target.height / 2);
                     arrow_offset.top = Math.max(
-                            Math.min(arrow_offset.top, win.bottom), 
-                            win.top
+                            Math.min(arrow_offset.top, win.bottom - TT_ARROW_MARGIN), 
+                            win.top + TT_ARROW_MARGIN
                     );
                     break;
                 }
