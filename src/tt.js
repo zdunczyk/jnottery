@@ -31,6 +31,9 @@
         }
 
         return $.extend({}, $obj, {
+            arrowPosition: function(options) {
+                return tt.tooltip.arrowPosition($.extend({}, { root: $(this) }, options)); 
+            },
             tooltip: function(options) {
                 var first_note,
                     tooltip,

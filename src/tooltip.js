@@ -454,6 +454,10 @@
             container: null
         };
 
+        if(document.doctype === null || screen.height < parseInt(result.win.height)) {
+            throw new Error('jNottery: Please specify doctype for your document, it\'s required for height calculation');
+        } 
+
         if(options.container instanceof $) {
             result.container = containerBoundary(options.container, result.target);
             result.tooltip_pos = result.container.tooltip_pos;
@@ -463,7 +467,7 @@
             result.tooltip_pos = calcPosition(result.tooltip, result.target, result.win);
         
         result.arrow_offset = arrowOffset(result.tooltip_pos, options.arrow, result.target, result.win);
-        $(document.body).append($('<div>').css({ width: 2, height: 2, 'background-color': 'black', position: 'absolute' }).offset(result.arrow_offset)); 
+        
         if(result.container)
             arrowToContainer(result.arrow_offset, result.tooltip_pos, result.container);
 
@@ -487,10 +491,6 @@
                     params = processOptions(options);
                 
                 event_params.edit = options.edit; 
-                
-                if(document.doctype === null || screen.height < parseInt(params.win.height)) {
-                    throw new Error('jNottery: Please specify doctype for your document, it\'s required for height calculation');
-                } 
                
                 if(typeof $tooltip === 'undefined') {
                     $tooltip = $(nano(main_view, view_defaults));
@@ -592,6 +592,9 @@
                 $input.val(val);
             }
             return val;
+        },
+        arrowPosition: function(options) {
+            return processOptions($.extend({}, defaults, options)).arrow_offset;
         }
     });
 })(window.tt, window.jQuery);
