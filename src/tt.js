@@ -82,9 +82,6 @@
                             'btn.edit.click.tt': function() {
                                 tt.tooltip.switchEditMode(false);    
                             },
-                            'btn.submit.click.tt': function() {
-                                tt.tooltip.switchEditMode(true);    
-                            },
                             'btn.facebook.click.tt': function() {
                                 tt.vendor.facebook(document.URL);
                             },
@@ -114,13 +111,18 @@
                 }, options));
                
                 tooltip.off('submit.tt').on('submit.tt', function(e, tooltip) {
-                    var note_id = tooltip.edit();
+                    var note_id = tooltip.edit(),
+                        content = tooltip.content();
+                   
+                    if(!content)
+                        return false;
                     
                     if(!note_id)
-                        tooltip.edit(tt.core.addNote(note_factory(tooltip.content())));
+                        tooltip.edit(tt.core.addNote(note_factory(content)));
                     else
-                        tt.core.getNote(add_note_to, note_id).setContent(tooltip.content()); 
+                        tt.core.getNote(add_note_to, note_id).setContent(content); 
                    
+                    tt.tooltip.switchEditMode(true);    
                     tt.core.updateHash();
                 });
 
