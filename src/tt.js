@@ -47,6 +47,7 @@
                 // stick to one note per element
                 switch(obj_type) {
                     case OBJ_NOTE: {
+                        add_note_to = target.element;
                         first_note = target;
                         break;    
                     }
@@ -73,16 +74,16 @@
                         
                 tooltip = tt.tooltip.open($.extend({}, { 
                     root: $(this),
-                    edit: (first_note ? first_note.id : undefined),
+                    edit: (first_note ? first_note.id : false),
                     content: (first_note ? first_note.getContent() : ''),
                     init: function(tooltip) {
 
                         tooltip.on({
                             'btn.edit.click.tt': function() {
-                                tt.tooltip.edit(false);    
+                                tt.tooltip.switchEditMode(false);    
                             },
                             'btn.submit.click.tt': function() {
-                                tt.tooltip.edit(true);
+                                tt.tooltip.switchEditMode(true);    
                             },
                             'btn.facebook.click.tt': function() {
                                 tt.vendor.facebook(document.URL);
@@ -113,20 +114,24 @@
                 }, options));
                
                 tooltip.off('submit.tt').on('submit.tt', function(e, tooltip) {
-                    if(!tooltip.edit)
-                        tooltip.edit = tt.core.addNote(note_factory(tt.tooltip.content()));
-                    else
-                        tt.core.getNote(add_note_to, tooltip.edit).setContent(tt.tooltip.content()); 
+                    var note_id = tooltip.edit();
                     
+                    if(!note_id)
+                        tooltip.edit(tt.core.addNote(note_factory(tooltip.content())));
+                    else
+                        tt.core.getNote(add_note_to, note_id).setContent(tooltip.content()); 
+                   
                     tt.core.updateHash();
                 });
 
+                tooltip.off('close.tt');
+                
                 if(obj_type === OBJ_SELECTION) {
-                    tooltip.off('close.tt').on('close.tt', function(e, tooltip) {
-                        if(!tooltip.edit) {
+                    tooltip.on('close.tt', function(e, tooltip) {
+                        if(!tooltip.edit()) {
                             tt.range.clear(target.range);
                             last_range = null;
-                        }        
+                        }  
                     });
                 }
 

@@ -58,9 +58,7 @@
         'btn.submit.click': 'submit'
     };
 
-    var event_params = {
-        edit: null
-    };
+    var edit = false;
 
     var defaults = {
         // show tooltip on the right or top
@@ -88,7 +86,7 @@
 
         title: false,
         
-        edit: undefined,
+        edit: false,
 
         // callbacks
         init: false
@@ -132,7 +130,7 @@
 
     function attachEvents($tooltip, params) {
         $.each(events_propagate, function(src, dest) {
-            $tooltip.off(src + '.tt').on(src + '.tt', function() {
+            $tooltip.on(src + '.tt', function() {
                 $(this).trigger(dest + '.tt', [ params ]);
             });
         });
@@ -140,7 +138,7 @@
         $.each(events, function(type, names) {
             $.each(names, function(name, elem_id) {
                 (function(name, type) {
-                    find(elem_id).off(type).on(type, function() {
+                    find(elem_id).on(type, function() {
                         $tooltip.trigger(name + '.' + type + '.tt', [ params ]);    
                     });
                 })(name, type); 
@@ -490,15 +488,13 @@
                 var $arrow,
                     params = processOptions(options),
                     view_options = $.extend({}, view_defaults, options.view);
-                
-                event_params.edit = options.edit; 
                
                 if(typeof $tooltip === 'undefined') {
                     $tooltip = $(nano(main_view, view_options));
                     $(document.body).append($tooltip);   
                     
                     // event handlers for tooltip's components
-                    attachEvents($tooltip, event_params);
+                    attachEvents($tooltip, this);
 
                     if($.type(options.init) === 'function') 
                         options.init($tooltip);
@@ -507,28 +503,10 @@
                 } else if(view_options.title) {
                     this.title(view_options.title);
                 }
-
-                find('input')
-                    .prop('readonly', !!options.edit) 
-                    .val(options.content);
-                
-                var $btns = find('btn'),
-                    $add = find('add'),
-                    $edit = find('edit');
-            
-                if(!!options.edit && options.content.length > 0)
-                    $btns.addClass('tt-active');
-                else
-                    $btns.removeClass('tt-active');
-                
-                if(!!options.edit) {
-                    $add.hide();
-                    $edit.show();
-                } else {
-                    $add.show();
-                    $edit.hide();
-                }
-                
+               
+                find('input').val(options.content);
+                this.switchEditMode(this.edit(options.edit ? options.edit : false));
+                 
                 $arrow = find('arrow');
 
                 var tooltip_calculations = calcTooltip(
@@ -558,33 +536,41 @@
                 return $tooltip;
             }
         },
-        edit: function(on) {
+        // when invoked without params, simply returns currently edited note
+        edit: function(id) {
+            if(id === false) {
+                edit = false;
+            } else if(typeof id !== 'undefined') {
+                edit = id;
+            }
+
+            return edit;
+        },
+        switchEditMode: function(on) {
             var btn_modifier;
 
-            if(open() && $tooltip.length !== 0) {
-                if(!on) {
-                    find('input').removeProp('readonly');
-                    
-                    btn_modifier = function(key, val) {
-                        find(val).removeClass('tt-active');    
-                    };
+            if(!on) {
+                find('input').removeProp('readonly');
+                
+                btn_modifier = function(key, val) {
+                    find(val).removeClass('tt-active');    
+                };
 
-                    find('add').show();
-                    find('edit').hide();
-                    
-                } else {
-                    find('input').prop('readonly', true); 
-                    
-                    btn_modifier = function(key, val) {
-                        find(val).addClass('tt-active');    
-                    };
-                    
-                    find('add').hide();
-                    find('edit').show();
-                }
-
-                $.each(['facebook', 'twitter', 'link', 'save'], btn_modifier);
+                find('add').show();
+                find('edit').hide();
+            } else {
+                find('input').prop('readonly', true); 
+                
+                btn_modifier = function(key, val) {
+                    find(val).addClass('tt-active');    
+                };
+                
+                find('add').hide();
+                find('edit').show();
             }
+
+            if($.type(btn_modifier) === 'function')
+                $.each(['facebook', 'twitter', 'link', 'save'], btn_modifier);
         },
         content: function(val) {
             var $input;
