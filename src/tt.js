@@ -127,10 +127,16 @@
                 });
 
                 tooltip.off('delete.tt').on('delete.tt', function(e, tooltip) {
-                    var note_id = tooltip.edit();
+                    var note_id = tooltip.edit(),
+                        note;
                     
                     if(note_id) {
-                        tt.core.getNote(add_note_to, note_id).remove();
+                        note = tt.core.getNote(add_note_to, note_id);
+                        
+                        if(note.range)
+                            tt.range.clear(note.range);
+                        
+                        note.remove();
                         $(this).trigger('btn.close.click.tt');
                         
                         tt.core.updateHash();
