@@ -47,8 +47,12 @@
         remove: function() {
             var element_id = tt.core.getElementId(this.element);
             
-            if(this.id !== null && typeof element_id !== 'undefined')
+            if(this.id !== null && typeof element_id !== 'undefined') {
                 delete tt.core.pendingNotes[element_id][this.id];
+
+                if($.isEmptyObject(tt.core.pendingNotes[element_id]))
+                    delete tt.core.pendingNotes[element_id];
+            }
         },
         values: function() {
             return {

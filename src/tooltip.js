@@ -28,10 +28,13 @@
                 label: 'Save notes in browser'
             },
             submit: {
-                label: 'Add note'
+                label: 'Add'
             },
             edit: {
-                label: 'Edit note'
+                label: 'Edit'
+            },
+            del: {
+                label: 'Delete'
             }
         },
         txt: {
@@ -49,13 +52,15 @@
             'btn.save': 'save',
             'btn.submit': 'add',
             'btn.edit': 'edit',
-            'btn.close': 'close'
+            'btn.close': 'close',
+            'btn.delete': 'del'
         }    
     };
 
     var events_propagate = {
         'btn.close.click': 'close',
-        'btn.submit.click': 'submit'
+        'btn.submit.click': 'submit',
+        'btn.delete.click': 'delete'
     };
 
     var edit = false;
@@ -557,7 +562,7 @@
                 };
 
                 find('add').show();
-                find('edit').hide();
+                find('edit').add(find('del')).hide();
             } else {
                 find('input').prop('readonly', true); 
                 
@@ -566,7 +571,7 @@
                 };
                 
                 find('add').hide();
-                find('edit').show();
+                find('edit').add(find('del')).show();
             }
 
             if($.type(btn_modifier) === 'function')

@@ -124,6 +124,17 @@
                     tt.core.updateHash();
                 });
 
+                tooltip.off('delete.tt').on('delete.tt', function(e, tooltip) {
+                    var note_id = tooltip.edit();
+                    
+                    if(note_id) {
+                        tt.core.getNote(add_note_to, note_id).remove();
+                        $(this).trigger('btn.close.click.tt');
+                        
+                        tt.core.updateHash();
+                    }
+                });
+
                 tooltip.off('close.tt');
                 
                 if(obj_type === OBJ_SELECTION) {

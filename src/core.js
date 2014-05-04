@@ -160,7 +160,7 @@
                 }), Base64.encode);
             }
 
-            return false;
+            return '';
         },
         updateHash: function() {
             var hash = this.merge();
