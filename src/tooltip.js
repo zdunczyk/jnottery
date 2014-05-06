@@ -46,14 +46,14 @@
 
     var events = {
         click: {
-            'btn.facebook': 'facebook',
-            'btn.twitter': 'twitter',
-            'btn.link': 'link',
-            'btn.save': 'save',
-            'btn.submit': 'add',
-            'btn.edit': 'edit',
-            'btn.close': 'close',
-            'btn.delete': 'del'
+            'btn.facebook': '.tt-facebook.tt-active',
+            'btn.twitter': '.tt-twitter.tt-active',
+            'btn.link': '.tt-link.tt-active',
+            'btn.save': '.tt-save.tt-active',
+            'btn.submit': '.tt-add',
+            'btn.edit': '.tt-edit',
+            'btn.close': '.tt-close',
+            'btn.delete': '.tt-del'
         }    
     };
 
@@ -143,7 +143,7 @@
         $.each(events, function(type, names) {
             $.each(names, function(name, elem_id) {
                 (function(name, type) {
-                    find(elem_id).on(type, function() {
+                    $tooltip.on(type, elem_id, function() {
                         $tooltip.trigger(name + '.' + type + '.tt', [ params ]);    
                     });
                 })(name, type); 
