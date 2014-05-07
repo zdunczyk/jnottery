@@ -483,10 +483,12 @@
 
     tt.tooltip = $.extend(tt.tooltip || {}, {
         close: function() {
-            if(typeof $tooltip !== 'undefined')
+            if(open())
                 $tooltip.trigger('close.tt'); 
         },
         open: function(options) {
+            this.close();
+
             if(typeof main_view !== 'undefined') {
                 options = $.extend({}, defaults, options);
 
