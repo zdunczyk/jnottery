@@ -122,6 +122,8 @@
                     options.onSelectionNote && options.onSelectionNote(note_obj);
                 });
             }
+
+            options.onReady && options.onReady();
         },
         merge: function() {
             var selectors = [],
