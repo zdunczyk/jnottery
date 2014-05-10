@@ -83,6 +83,8 @@
         // none/$element/'5px 10 5px 100px'
         container: 'none',
 
+        fitToViewport: true,
+
         // dimensions of tooltip's window
         width: TT_TOOLTIP_WIDTH,
         height: TT_TOOLTIP_HEIGHT,
@@ -243,7 +245,7 @@
         return min_cutting.name;
     }
 
-    function arrowOffset(tooltip_pos, arrow_pos, target, win) {
+    function arrowOffset(tooltip_pos, arrow_pos, target, win, fit_viewport) {
         var arrow_offset = { top: target.top, left: target.left };
     
         if(tooltip_pos === 'top' || tooltip_pos === 'bottom') {
@@ -252,19 +254,26 @@
                     
             switch(arrow_pos) {
                 case 'plus': {
-                    arrow_offset.left += Math.min(target.width, win.right - target.left - TT_ARROW_MARGIN);
+                    if(fit_viewport)
+                        arrow_offset.left += Math.min(target.width, win.right - target.left - TT_ARROW_MARGIN);
+                    else
+                        arrow_offset.left += target.width;
                     break;
                 }
                 case 'minus': {
-                    arrow_offset.left += Math.max(0, win.left - target.left + TT_ARROW_MARGIN); 
+                    if(fit_viewport)
+                        arrow_offset.left += Math.max(0, win.left - target.left + TT_ARROW_MARGIN); 
                     break;
                 }
                 case 'center': {
                     arrow_offset.left += Math.floor(target.width / 2);
-                    arrow_offset.left = Math.max(
-                            Math.min(arrow_offset.left, win.right - TT_ARROW_MARGIN), 
-                            win.left + TT_ARROW_MARGIN
-                    );
+                    
+                    if(fit_viewport) {
+                        arrow_offset.left = Math.max(
+                                Math.min(arrow_offset.left, win.right - TT_ARROW_MARGIN), 
+                                win.left + TT_ARROW_MARGIN
+                        );
+                    }
                     break;
                 }
                 default: {
@@ -277,19 +286,26 @@
 
             switch(arrow_pos) {
                 case 'plus': {
-                    arrow_offset.top += Math.min(target.height, win.bottom - target.top - TT_ARROW_MARGIN);
+                    if(fit_viewport)
+                        arrow_offset.top += Math.min(target.height, win.bottom - target.top - TT_ARROW_MARGIN);
+                    else
+                        arrow_offset.top += target.height;
                     break;
                 }
                 case 'minus': {
-                    arrow_offset.top += Math.max(0, win.top - target.top + TT_ARROW_MARGIN); 
+                    if(fit_viewport)
+                        arrow_offset.top += Math.max(0, win.top - target.top + TT_ARROW_MARGIN); 
                     break;
                 }
                 case 'center': {
                     arrow_offset.top += Math.floor(target.height / 2);
-                    arrow_offset.top = Math.max(
-                            Math.min(arrow_offset.top, win.bottom - TT_ARROW_MARGIN), 
-                            win.top + TT_ARROW_MARGIN
-                    );
+                    
+                    if(fit_viewport) {
+                        arrow_offset.top = Math.max(
+                                Math.min(arrow_offset.top, win.bottom - TT_ARROW_MARGIN), 
+                                win.top + TT_ARROW_MARGIN
+                        );
+                    }
                     break;
                 }
                 default: {
@@ -334,7 +350,7 @@
         }
     }
 
-    function calcTooltip(tooltip_align, arrow_offset, tooltip_pos, tooltip, win, container) {
+    function calcTooltip(tooltip_align, arrow_offset, tooltip_pos, tooltip, win, container, fit_viewport) {
         var tooltip_offset = { top: arrow_offset.top, left: arrow_offset.left },
             arrow_adjust = {};
         
@@ -346,23 +362,29 @@
 
             switch(tooltip_align) {
                 case 'plus': {
-                    tooltip_offset.left = Math.min(arrow_offset.left, win.right - tooltip.width);
+                    if(fit_viewport)
+                        tooltip_offset.left = Math.min(tooltip_offset.left, win.right - tooltip.width);
                     break;
                 }
                 case 'minus': {
-                    tooltip_offset.left = Math.max(arrow_offset.left - tooltip.width, win.left); 
+                    tooltip_offset.left -= tooltip.width;
+                    if(fit_viewport)
+                        tooltip_offset.left = Math.max(tooltip_offset.left, win.left); 
                     break;
                 }
                 case 'center': {
                     tooltip_offset.left -= Math.floor(tooltip.width / 2);
-                    tooltip_offset.left = Math.max(
-                            Math.min(tooltip_offset.left, win.right - tooltip.width), 
-                            win.left
-                    );
+                    
+                    if(fit_viewport) {
+                        tooltip_offset.left = Math.max(
+                                Math.min(tooltip_offset.left, win.right - tooltip.width), 
+                                win.left
+                        );
+                    }
                     break;
                 }
                 default: {
-                    tooltip_offset.left = arrow_offset.left - Math.max(parseInt(tooltip_align), 0);
+                    tooltip_offset.left -= Math.max(parseInt(tooltip_align), 0);
                 }
             }
 
@@ -395,23 +417,29 @@
             
             switch(tooltip_align) {
                 case 'plus': {
-                    tooltip_offset.top = Math.min(arrow_offset.top, win.bottom - tooltip.height);
+                    if(fit_viewport)
+                        tooltip_offset.top = Math.min(tooltip_offset.top, win.bottom - tooltip.height);
                     break;
                 }
                 case 'minus': {
-                    tooltip_offset.top = Math.max(arrow_offset.top - tooltip.height, win.top); 
+                    tooltip_offset.top -= tooltip.height;
+                    if(fit_viewport)
+                        tooltip_offset.top = Math.max(tooltip_offset.top, win.top); 
                     break;
                 }
                 case 'center': {
                     tooltip_offset.top -= Math.floor(tooltip.height / 2);
-                    tooltip_offset.top = Math.max(
-                            Math.min(tooltip_offset.top, win.bottom - tooltip.height), 
-                            win.top
-                    );
+                    
+                    if(fit_viewport) {
+                        tooltip_offset.top = Math.max(
+                                Math.min(tooltip_offset.top, win.bottom - tooltip.height), 
+                                win.top
+                        );
+                    }
                     break;
                 }
                 default: {
-                    tooltip_offset.top = arrow_offset.top - Math.max(parseInt(tooltip_align), 0);
+                    tooltip_offset.top -= Math.max(parseInt(tooltip_align), 0);
                 }
             }
 
@@ -468,7 +496,7 @@
         if(result.tooltip_pos === 'auto' && !result.container)
             result.tooltip_pos = calcPosition(result.tooltip, result.target, result.win);
         
-        result.arrow_offset = arrowOffset(result.tooltip_pos, options.arrow, result.target, result.win);
+        result.arrow_offset = arrowOffset(result.tooltip_pos, options.arrow, result.target, result.win, options.fitToViewport);
         
         if(result.container)
             arrowToContainer(result.arrow_offset, result.tooltip_pos, result.container);
@@ -524,7 +552,8 @@
                         params.tooltip_pos, 
                         params.tooltip, 
                         params.win, 
-                        params.container
+                        params.container,
+                        options.fitToViewport
                 );
                 
                 // adjust arrow position inside tooltip's window 
