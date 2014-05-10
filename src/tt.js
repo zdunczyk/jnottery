@@ -12,8 +12,10 @@
         var $obj,
             target,
             obj_type;
-        
-        if(obj instanceof tt.core.Note) {
+       
+        if(!obj) {
+            return $();
+        } else if(obj instanceof tt.core.Note) {
             if(obj instanceof tt.core.SelectionNote)
                 $obj = tt.range.getElements(obj.range);
             else
@@ -171,11 +173,16 @@
                 var range = tt.range.getFrom($(this)),
                     result;
 
-                tt.range.apply(range);
-                result = tt.range.getElements(range); 
-                
-                result.tt_selection = new tt.core.Selection($(this), range);
-                return result;
+                if(range) {
+                    tt.range.apply(range);
+                    result = tt.range.getElements(range); 
+                    
+                    result.tt_selection = new tt.core.Selection($(this), range);
+                    
+                    return result;
+                }
+
+                return $();
             }
         });
     };
