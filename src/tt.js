@@ -112,17 +112,23 @@
                     }
                 }, options));
                
-                tooltip.off('submit.tt').on('submit.tt', function(e, tooltip) {
-                    var note_id = tooltip.edit(),
-                        content = tooltip.content();
+                tooltip.off('submit.tt').on('submit.tt', function(e, tooltip_obj) {
+                    var note_id = tooltip_obj.edit(),
+                        content = tooltip_obj.content(),
+                        note;
                    
                     if(!content)
                         return false;
                     
-                    if(!note_id)
-                        tooltip.edit(tt.core.addNote(note_factory(content)));
-                    else
-                        tt.core.getNote(add_note_to, note_id).setContent(content); 
+                    if(!note_id) {
+                        note = note_factory(content);
+                        tooltip_obj.edit(tt.core.addNote(note));
+                        tooltip.trigger('new.note.tt', [ tooltip_obj, note ]);
+                    } else {
+                        note = tt.core.getNote(add_note_to, note_id);
+                        note.setContent(content);
+                        tooltip.trigger('edit.note.tt', [ tooltip_obj, note ]);
+                    }
                    
                     tt.tooltip.switchEditMode(true);    
                     tt.core.updateHash();
