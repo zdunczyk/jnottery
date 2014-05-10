@@ -63,7 +63,8 @@
         'btn.delete.click': 'delete'
     };
 
-    var edit = false;
+    var edit = false,
+        opened = false;
 
     var defaults = {
         // show tooltip on the right or top
@@ -150,9 +151,7 @@
             });    
         });
 
-        $tooltip.on('btn.close.click.tt', function() {
-            fadeOut($(this));
-        });
+        $tooltip.on('btn.close.click.tt', tt.tooltip.close);
     }
 
     function outerBoundary(collection) {
@@ -477,14 +476,17 @@
         return result;
     }
     
-    function open() {
+    function isActive() {
         return typeof $tooltip !== 'undefined';
     }
 
     tt.tooltip = $.extend(tt.tooltip || {}, {
         close: function() {
-            if(open())
-                $tooltip.trigger('close.tt'); 
+            if(isActive() && opened) {
+                opened = false;
+                fadeOut($tooltip);
+                $tooltip.trigger('close.tt', [ tt.tooltip ]); 
+            }
         },
         open: function(options) {
             this.close();
@@ -540,6 +542,8 @@
                 // show tooltip
                 fadeIn($tooltip);
 
+                opened = true;
+
                 return $tooltip;
             }
         },
@@ -582,7 +586,7 @@
         content: function(val) {
             var $input;
 
-            if(open()) {
+            if(isActive()) {
                 $input = find('input');
                 if(typeof val === 'undefined')
                     return $input.val();
