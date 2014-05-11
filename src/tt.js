@@ -125,8 +125,12 @@
                         note = note_factory(content);
                         var asd = tt.core.addNote(note);
                         tooltip_obj.edit(asd);
-                        tt.range.clear(note.range);
-                        tt.range.apply(note.range, asd);
+                        
+                        if(note.range && note.range.isValid()) {
+                            tt.range.clear(note.range);
+                            tt.range.apply(note.range, asd);
+                        }
+
                         tooltip.trigger('new.note.tt', [ tooltip_obj, note ]);
                     } else {
                         note = tt.core.getNote(add_note_to, note_id);
@@ -138,8 +142,8 @@
                     tt.core.updateHash();
                 });
 
-                tooltip.off('delete.tt').on('delete.tt', function(e, tooltip) {
-                    var note_id = tooltip.edit(),
+                tooltip.off('delete.tt').on('delete.tt', function(e, tooltip_obj) {
+                    var note_id = tooltip_obj.edit(),
                         note;
                     
                     if(note_id) {
@@ -149,7 +153,9 @@
                             tt.range.clear(note.range, note.id);
                         
                         note.remove();
-                        $(this).trigger('btn.close.click.tt');
+                        tooltip.trigger('deleted.note.tt', [ tooltip_obj, note_id ]);
+                        
+                        tt.tooltip.close();
                         
                         tt.core.updateHash();
                     }
@@ -159,7 +165,7 @@
                 
                 if(obj_type === OBJ_SELECTION) {
                     tooltip.on('close.tt', function(e, tooltip) {
-                        if(!tooltip.edit()) {
+                        if(!tooltip.edit() && target.range && target.range.isValid()) {
                             tt.range.clear(target.range);
                             last_range = null;
                         }  
