@@ -16,9 +16,10 @@
         if(!obj) {
             return $();
         } else if(obj instanceof tt.core.Note) {
-            if(obj instanceof tt.core.SelectionNote)
+            if(obj instanceof tt.core.SelectionNote) {
+                !obj.range.isValid() && obj.range.refresh();
                 $obj = tt.range.getElements(obj.range, obj.id);
-            else
+            } else
                 $obj = obj.element;
                 
             target = obj;
