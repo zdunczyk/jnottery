@@ -3,13 +3,23 @@
 
 (function(tt, $) { 
     var TT_APPLIER_CLASS = 'tt-selection',
+        TT_DEFAULT_ID = 'default',
         TT_NODE_TEXT = 3;
    
-    var applier;
+    var appliers = {};
 
-    function getApplier() {
-        !applier && (applier = rangy.createCssClassApplier(TT_APPLIER_CLASS, { normalize: true }));
-        return applier;      
+    function getApplierClass(id) {
+        return TT_APPLIER_CLASS + '-' + (id ? id : TT_DEFAULT_ID);
+    }
+
+    function getApplier(id) {
+        !id && (id = TT_DEFAULT_ID);
+
+        !appliers[id] && (appliers[id] = rangy.createCssClassApplier(
+            getApplierClass(id) + ' tt-selection', 
+            { normalize: true }
+        ));
+        return appliers[id];      
     }
 
     tt.range = $.extend(tt.range || {}, {
@@ -101,10 +111,10 @@
 
             return result;    
         },
-        getElements: function(range) {
+        getElements: function(range, id) {
             var result = $(),
                 nodes = range.getNodes(false, function (element) {
-                    return $(element.parentNode).hasClass(TT_APPLIER_CLASS);
+                    return $(element.parentNode).hasClass(getApplierClass(id));
                 });
             
             for(var i = 0; i < nodes.length; i++) 
@@ -112,11 +122,11 @@
             
             return result;
         },
-        apply: function(range) {
-            getApplier().applyToRange(range);
+        apply: function(range, id) {
+            getApplier(id).applyToRange(range);
         },
-        clear: function(range) {
-            getApplier().undoToRange(range); 
+        clear: function(range, id) {
+            getApplier(id).undoToRange(range); 
         },
         equals: function(r1, r2) {
             return (

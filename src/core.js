@@ -109,7 +109,6 @@
                         start: note.selection[0],
                         end: note.selection[1]
                     });
-                    tt.range.apply(range);
                     
                     var note_obj = new tt.core.SelectionNote(
                         elements[note.selector],
@@ -117,7 +116,7 @@
                         note.content,
                         note.params
                     );
-                    note_obj.save();
+                    tt.range.apply(range, note_obj.save());
 
                     options.onSelectionNote && options.onSelectionNote(note_obj);
                 });

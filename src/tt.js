@@ -17,7 +17,7 @@
             return $();
         } else if(obj instanceof tt.core.Note) {
             if(obj instanceof tt.core.SelectionNote)
-                $obj = tt.range.getElements(obj.range);
+                $obj = tt.range.getElements(obj.range, obj.id);
             else
                 $obj = obj.element;
                 
@@ -122,7 +122,10 @@
                     
                     if(!note_id) {
                         note = note_factory(content);
-                        tooltip_obj.edit(tt.core.addNote(note));
+                        var asd = tt.core.addNote(note);
+                        tooltip_obj.edit(asd);
+                        tt.range.clear(note.range);
+                        tt.range.apply(note.range, asd);
                         tooltip.trigger('new.note.tt', [ tooltip_obj, note ]);
                     } else {
                         note = tt.core.getNote(add_note_to, note_id);
@@ -142,7 +145,7 @@
                         note = tt.core.getNote(add_note_to, note_id);
                         
                         if(note.range)
-                            tt.range.clear(note.range);
+                            tt.range.clear(note.range, note.id);
                         
                         note.remove();
                         $(this).trigger('btn.close.click.tt');
