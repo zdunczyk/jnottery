@@ -5,24 +5,17 @@ module.exports = function(grunt) {
         lib_name: 'jnottery-v<%= pkg.version %>', 
         full_name: 'jnottery-full-v<%= pkg.version %>',
         nano_name: 'nano',
-        base64_name: 'base64', 
+        base64_name: 'base64',
+        rangy_dir: grunt.option('rangy'),
         view_build_dir: 'build/views',
-        lib_banner:'\
+        lib_banner: '\
 \
 // <%= pkg.name %> library \n\
 // Copyright (c) 2014, <%= pkg.author %> <tomasz@zdunczyk.org> \n\
 // Released under the <%= pkg.license %> license. \n\
 \
         \n',
-        tooltip: {
-            views: 'src/tooltip/view/*.html',
-            output: '<%= view_build_dir %>'
-        },
-        concat: {
-            full: {
-                options: {
-                    separator: '\n\n',
-                    banner: '\
+        full_banner: '\
 \
 // <%= pkg.name %> Full Release \n\
 // Parts of this code are written, and maintained by diffrent authors, see copyright notes below. \n\
@@ -31,7 +24,16 @@ module.exports = function(grunt) {
 // The library itself and all of its dependencies are released under the <%= pkg.license %> license. \n\
 // Requires jQuery, other dependencies included. \n\
 \
-                    \n'
+        \n',
+        tooltip: {
+            views: 'src/tooltip/view/*.html',
+            output: '<%= view_build_dir %>'
+        },
+        concat: {
+            mindist: {
+                options: {
+                    separator: '\n\n',
+                    banner: '<%= full_banner %>'
                 },
                 src: [ 
                     'libs/0xJQ/release/xJQ.min.js', 
@@ -41,6 +43,22 @@ module.exports = function(grunt) {
                     'build/<%= base64_name %>.min.js',
                     'build/<%= nano_name %>.min.js',
                     'build/<%= lib_name %>.min.js' 
+                ],
+                dest: 'build/<%= full_name %>.min.js'
+            },
+            dist: {
+                options: {
+                    separator: '\n\n',
+                    banner: '<%= full_banner %>'
+                },
+                src: [ 
+                    'libs/0xJQ/release/xJQ.js', 
+                    '<%= rangy_dir %>/rangy-core.js',
+                    '<%= rangy_dir %>/rangy-cssclassapplier.js',
+                    'libs/rayson/release/rayson.js',
+                    'libs/js-base64/<%= base64_name %>.js',
+                    'libs/nano/<%= nano_name %>.js',
+                    'build/<%= lib_name %>.js' 
                 ],
                 dest: 'build/<%= full_name %>.js'
             },
@@ -123,7 +141,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('lib', [ 'tooltip', 'concat:lib', 'uglify:lib', 'copy:css' ]);
-    grunt.registerTask('full', [ 'lib', 'uglify:nano', 'uglify:base64', 'concat:full' ]);
+    grunt.registerTask('full', [ 'lib', 'uglify:nano', 'uglify:base64', 'concat:dist', 'concat:mindist' ]);
 };
 
 
