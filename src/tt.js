@@ -130,16 +130,15 @@
                             tt.range.clear(note.range);
                             tt.range.apply(note.range, asd);
                         }
-
-                        tooltip.trigger('new.note.tt', [ tooltip_obj, note ]);
                     } else {
                         note = tt.core.getNote(add_note_to, note_id);
                         note.setContent(content);
-                        tooltip.trigger('edit.note.tt', [ tooltip_obj, note ]);
                     }
                    
                     tt.tooltip.switchEditMode(true);    
                     tt.core.updateHash();
+                    
+                    tooltip.trigger((note_id ? 'edit.note.tt' : 'new.note.tt'), [ tooltip_obj, note ]);
                 });
 
                 tooltip.off('delete.tt').on('delete.tt', function(e, tooltip_obj) {

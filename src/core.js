@@ -14,6 +14,8 @@
 
     var rootOrder = [ 'version', 'selectors', 'element_notes', 'selection_notes' ];
 
+    var element_selectors = {};
+
     tt.core = $.extend(tt.core || {}, {
         version: '0.1.0',
         
@@ -128,11 +130,30 @@
             var selectors = [],
                 current_selector,
                 element_notes = [],
-                selection_notes = [];
+                selection_notes = [],
+                element_ref,
+                class_blacklist = [];
             
             if(!$.isEmptyObject(this.pendingNotes)) {
                 $.each(this.pendingNotes, function(element_id, notes) {
-                    current_selector = selectors.push(tt.core.getElementById(element_id).xJQ()) - 1;
+                    // calculate selector only once
+                    if(!element_selectors[element_id]) {
+                        element_ref = tt.core.getElementById(element_id);
+                       
+                        class_blacklist = [];
+                        $.each($(element_ref).attr('class').trim().split(/\s+/), function(index, clas) {
+                            // ignore internal binding classes
+                            if(clas.substr(0, tt.core.ID_PREFIX.length) === tt.core.ID_PREFIX) {
+                                class_blacklist.push(clas);        
+                            }
+                        });
+
+                        element_selectors[element_id] = element_ref.xJQ({
+                            classBlacklist: class_blacklist 
+                        });
+                    }
+
+                    current_selector = selectors.push(element_selectors[element_id]) - 1;
                     
                     $.each(notes, function(note_id, note) {
                         if(note instanceof tt.core.ElementNote)
