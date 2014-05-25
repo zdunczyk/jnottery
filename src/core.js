@@ -66,6 +66,9 @@
             
             return {}; 
         },
+        clear: function() {
+            this.pendingNotes = {};    
+        },
         init: function(options) {
             var hash_decoded,
                 elements = [];
@@ -73,55 +76,61 @@
             options = $.extend({
                 hash: window.location.hash.slice(1) 
             }, options);
-            
-            if(options.hash !== '') {
-                hash_decoded = rayson.b64.decode(options.hash, Base64.decode);
-                
-                hash_decoded = rayson.unserialize(hash_decoded, {
-                    // version of encoded data
-                    version: str,
-                    // encoded selectors
-                    selectors: [ raw ],
-                    // encoded notes
-                    element_notes: [ this.ElementNote.template ],
-                    selection_notes: [ this.SelectionNote.template ]
-                }, {
-                    root: rootOrder,
-                    element_notes: this.ElementNote.templateOrder,
-                    selection_notes: this.SelectionNote.templateOrder
-                });
-                
-                $.each(hash_decoded.selectors, function(i, selector) {
-                    elements.push($.xJQ(selector));
-                });
-                
-                $.each(hash_decoded.element_notes, function(i, note) {
-                    var note_obj = new tt.core.ElementNote(
-                        elements[note.selector],
-                        note.content,
-                        note.params
-                    );
-                    note_obj.save();
-
-                    options.onElementNote && options.onElementNote(note_obj);
-                });
-                
-                $.each(hash_decoded.selection_notes, function(i, note) {
-                    var range = tt.range.unserialize(elements[note.selector], {
-                        start: note.selection[0],
-                        end: note.selection[1]
+           
+            try {
+                if(options.hash !== '') {
+                    hash_decoded = rayson.b64.decode(options.hash, Base64.decode);
+                    
+                    hash_decoded = rayson.unserialize(hash_decoded, {
+                        // version of encoded data
+                        version: str,
+                        // encoded selectors
+                        selectors: [ raw ],
+                        // encoded notes
+                        element_notes: [ this.ElementNote.template ],
+                        selection_notes: [ this.SelectionNote.template ]
+                    }, {
+                        root: rootOrder,
+                        element_notes: this.ElementNote.templateOrder,
+                        selection_notes: this.SelectionNote.templateOrder
                     });
                     
-                    var note_obj = new tt.core.SelectionNote(
-                        elements[note.selector],
-                        range,
-                        note.content,
-                        note.params
-                    );
-                    tt.range.apply(range, note_obj.save());
+                    $.each(hash_decoded.selectors, function(i, selector) {
+                        elements.push($.xJQ(selector));
+                    });
+                    
+                    $.each(hash_decoded.element_notes, function(i, note) {
+                        var note_obj = new tt.core.ElementNote(
+                            elements[note.selector],
+                            note.content,
+                            note.params
+                        );
+                        note_obj.save();
 
-                    options.onSelectionNote && options.onSelectionNote(note_obj);
-                });
+                        options.onElementNote && options.onElementNote(note_obj);
+                    });
+                    
+                    $.each(hash_decoded.selection_notes, function(i, note) {
+                        var range = tt.range.unserialize(elements[note.selector], {
+                            start: note.selection[0],
+                            end: note.selection[1]
+                        });
+                        
+                        var note_obj = new tt.core.SelectionNote(
+                            elements[note.selector],
+                            range,
+                            note.content,
+                            note.params
+                        );
+                        tt.range.apply(range, note_obj.save());
+
+                        options.onSelectionNote && options.onSelectionNote(note_obj);
+                    });
+                }
+            } catch(err) {
+                this.clear();
+                options.onError && options.onError(err);
+                return;
             }
 
             options.onReady && options.onReady();
