@@ -17,10 +17,11 @@
     width: 244px;
     height: 144px;
     padding: 10px;
-    font-size: 11pt;
+    font-size: 14px;
     font-family: 'Helvetica', Arial, 'lucida grande', tahoma, verdana, arial, sans-serif;
     border-radius: 5px;
     opacity: 0.0;
+    z-index: 9999999;
 }
 
 .tt-tooltip a {
@@ -48,8 +49,9 @@
     float: left;
     resize: none;
     width: 100%;
+    height: 90px;
     font-family: inherit;
-    font-size: 12pt;
+    font-size: 16px;
     background-color: white;
     border: 0px;
     border-bottom: 4px solid #e5e5e5;
@@ -73,8 +75,10 @@
     cursor: pointer;
     margin-top: 5px;
     font-size: inherit;
-    font-weight: 600;
-    display: block;
+    font-weight: 700;
+    padding: 0px 10px 0px 10px; 
+    height: 20px; 
+    vertical-align: middle;
 }
 
 .tt-submit:hover {
@@ -86,7 +90,7 @@
     height: 28px;
     position: relative;
     vertical-align: top;
-    font-weight: 900;
+    font-weight: 700;
     text-align: center;
     background-color: #4e4e4e;
     background-size: 100% 100%;
@@ -117,7 +121,7 @@
 }
 
 .tt-info {
-    font-weight: 600;
+    font-weight: 700;
     white-space: nowrap;
     overflow: hidden;
 }
@@ -246,6 +250,9 @@
 .tt-btns {
     margin-left: -100%;
     width: 40px;
+    position: relative;
+    left: 100%;
+    float: left;
 }
 
 .tt-hide {

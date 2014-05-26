@@ -485,7 +485,8 @@
         };
 
         if(document.doctype === null || screen.height < parseInt(result.win.height)) {
-            throw new Error('jNottery: Please specify doctype for your document, it\'s required for height calculation');
+            // @todo checking doctype in chrome
+            //throw new Error('jNottery: Please specify doctype for your document, it\'s required for height calculation');
         } 
 
         if(options.container instanceof $) {
