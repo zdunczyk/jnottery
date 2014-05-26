@@ -18,6 +18,8 @@
 
     tt.core = $.extend(tt.core || {}, {
         version: '0.1.0-pa',
+
+        root: null,
         
         // internals
         ID_PREFIX: 'ttid',
@@ -76,6 +78,8 @@
             options = $.extend({
                 hash: window.location.hash.slice(1) 
             }, options);
+
+            this.root = options.root;
            
             try {
                 if(options.hash !== '') {
@@ -106,7 +110,9 @@
                     }
                     
                     $.each(hash_decoded.selectors, function(i, selector) {
-                        elements.push($.xJQ(selector));
+                        elements.push($.xJQ(selector, {
+                            root: tt.core.root
+                        }));
                     });
                     
                     $.each(hash_decoded.element_notes, function(i, note) {
@@ -168,7 +174,8 @@
                         });
 
                         element_selectors[element_id] = element_ref.xJQ({
-                            classBlacklist: class_blacklist 
+                            classBlacklist: class_blacklist,
+                            root: tt.core.root
                         });
                     }
 
