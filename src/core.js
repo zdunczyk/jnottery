@@ -17,7 +17,7 @@
     var element_selectors = {};
 
     tt.core = $.extend(tt.core || {}, {
-        version: '0.1.0',
+        version: '0.1.0-pa',
         
         // internals
         ID_PREFIX: 'ttid',
@@ -94,6 +94,16 @@
                         element_notes: this.ElementNote.templateOrder,
                         selection_notes: this.SelectionNote.templateOrder
                     });
+
+                    function getSignificantNum(version) {
+                        return version.substr(0, version.indexOf('.'));
+                    }
+
+                    if(getSignificantNum(hash_decoded.version) !== getSignificantNum(tt.core.version)) {
+                        throw new Error('jNottery: Data was encoded with ' 
+                            + hash_decoded.version + ' version of the library which is not compatible with current ' 
+                            + tt.core.version);
+                    }
                     
                     $.each(hash_decoded.selectors, function(i, selector) {
                         elements.push($.xJQ(selector));
