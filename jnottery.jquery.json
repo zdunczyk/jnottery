@@ -1,0 +1,33 @@
+{
+    "name": "jnottery",
+    "title": "jNottery",
+    "description": "jNottery is a jQuery plugin that lets you add notes and markers to webpages. All the data is encoded as a part of an URL which makes it easy to share or save.",
+    "keywords": [
+        "note",
+        "notice",
+        "marker",
+        "comment",
+        "share",
+        "bookmark",
+        "jquery",
+        "rangy"
+    ],
+    "version": "0.1.0-pa",
+    "author": {
+        "name": "Tomasz Zduńczyk",
+        "email": "tomasz@zdunczyk.org"
+    },
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "https://raw.githubusercontent.com/zdunczyk/jnottery/master/LICENSE"
+        }
+    ],
+    "bugs": "https://github.com/zdunczyk/jnottery/issues",
+    "homepage": "http://jnottery.com/",
+    "download": "http://jnottery.com/code/jnottery-full-v0.1.0-pa.zip",
+    "demo": "http://jnottery.com/",
+    "dependencies": { 
+        "jquery": ">=1.9"
+    }
+}
