@@ -262,3 +262,10 @@
 .tt-del {
     margin-right: 3px;
 }
+
+/* bootstrap hack */
+.tt-tooltip *:after, .tt-tooltip *:before {
+    -webkit-box-sizing: content-box;
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+}
