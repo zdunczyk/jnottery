@@ -1,0 +1,120 @@
+<!doctype html>
+<!--
+    jNottery (c) 2014, Tomasz Zduńczyk <tomasz@zdunczyk.org>
+    Released under the MIT license.
+-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>jNottery demo - Reddit marker</title>
+        <script>
+            var BITLY_ACCESS_TOKEN = '';
+        </script>
+        <link rel="stylesheet" href="../../build/jnottery-v0.1.0-pa.css">
+        <style>
+            li {
+                list-style-type: none;
+                font-size: 20px;
+                padding: 5px;
+            }
+
+            li div {
+                font-size: 12px;
+                color: gray;
+                margin-left: 30px;
+            }
+
+            .footer {
+                font-size: 12px;
+                margin-top: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Reddit feed</h1>
+        Select your favourite links and click on the Save button to store them in URL.
+        <ul class="reddit-feed">
+        </ul>
+        <input type="button" value="Save" id="save_btn"/>
+        <input type="button" value="Share on twitter" id="share_btn"/>
+        <div class="footer">
+            <a href="http://jnottery.com/">jNottery</a> demo page. 
+            Other examples are available <a href="http://jnottery.com/examples">here</a>.
+            Source code of this page is released on <a href="https://github.com/zdunczyk/jnottery/tree/master/examples">Github</a>.
+        </div>           
+        <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script> 
+        <script src="../../build/jnottery-full-v0.1.0-pa.min.js"></script>
+        <script>
+            $(function() {
+                var reddit_url = 'http://www.reddit.com';
+
+                function init_nottery() {
+                    tt(document.body).init({
+                        vendor: {
+                            bitly: {
+                                access_token: BITLY_ACCESS_TOKEN
+                            }
+                        },   
+                        onElementNote: function(note) {
+                            note.element.find('input').prop('checked', true);
+                        } 
+                    });
+                }
+               
+                // save button
+                $('#save_btn').click(function() {
+                    tt.core.clear();
+                    
+                    $('.reddit-feed').find('input:checked').each(function(key, elem) {
+                        // saving li elements (they have some text inside, so are better for selecting)
+                        tt.core.addNote(new tt.core.ElementNote($(elem).closest('li')));
+                    });
+
+                    tt.core.updateHash();
+                });
+
+                // share button
+                $('#share_btn').click(function() {
+                    if(confirm('Make sure that you\'ve clicked Save button before sharing the content!')) {
+                        tt.vendor.bitly(document.URL, function(short_url) {
+                            tt.vendor.twitter(short_url);    
+                        });
+                    } 
+                });
+               
+                // get fresh feed from reddit.com
+                $.ajax({
+                    url: reddit_url + '/api/info.json',
+                    data: {
+                        limit: 10,
+                        url: reddit_url
+                    },
+                    dataType: 'jsonp',
+                    jsonp: 'jsonp',
+                    success: function(listing) {
+                        $.each(listing.data.children, function(key, child) {
+                            $('.reddit-feed').append(
+                                $('<li/>').attr({
+                                    id: child.data.id
+                                }).append(
+                                    $('<input/>').attr({
+                                        type: 'checkbox'
+                                    })
+                                ).append(
+                                    $('<a/>').attr({
+                                        href: reddit_url + child.data.permalink,
+                                        target: '_blank'
+                                    }).text(child.data.title)
+                                ).append(
+                                    $('<div/>').text('posted by ' + child.data.author) 
+                                )
+                            );  
+                        });
+                        // intialization starts when all reddit links are loaded
+                        init_nottery();
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
