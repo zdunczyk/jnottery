@@ -1,0 +1,157 @@
+<!doctype html>
+<!--
+    jNottery (c) 2014, Tomasz Zduńczyk <tomasz@zdunczyk.org>
+    Released under the MIT license.
+-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>jNottery demo - Note list</title>
+        <script>
+            var BITLY_ACCESS_TOKEN = '';
+        </script>
+        <link rel="stylesheet" href="../../build/jnottery-v0.1.0-pa.css">
+        <style>
+            ul {
+                padding: 0px;
+            }
+            
+            li {
+                list-style-type: none;
+                padding: 5px;
+                border-bottom: 1px solid #eeeeee;
+                margin-left: 0px;
+                cursor: pointer;
+            }
+
+            li:hover {
+                background-color: #eeeeee;
+            }
+            
+            .colors {
+                border: 1px solid black;                
+            }
+
+            .colorbox {
+                border: 1px solid black;
+                width: 150px;
+                height: 150px;
+                margin: 10px;
+                display: inline-block;
+            }
+
+            .footer {
+                font-size: 12px;
+                margin-top: 20px;
+            }
+
+            .container {
+                position: relative;
+                width: 820px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .color-picker {
+                position: absolute;
+                left: 300px;
+                width: 520px;
+            }
+
+            .left-pane {
+                position: fixed;
+                width: 280px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="left-pane">
+                <h3>Your names:</h3> 
+                <ul class="color-list"></ul>
+                <div class="footer">
+                    <a href="http://jnottery.com/">jNottery</a> demo page. 
+                    Other examples are available <a href="http://jnottery.com/examples">here</a>.
+                    Source code of this page is released on <a href="https://github.com/zdunczyk/jnottery/tree/master/examples">Github</a>.
+                </div>   
+            </div>
+            <div class="color-picker">
+                <h1>Name the colors!</h1>
+                Click on color boxes to name the colors.
+                <div class="colors"></div>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script> 
+        <script src="../../build/jnottery-full-v0.1.0-pa.min.js"></script>
+        <script>
+            $(function() {
+                var colors = [
+                    '#48CCCD', '#43C6DB', '#46C7C7', '#43BFC7', '#3EA99F', '#3B9C9C', 
+                    '#438D80', '#348781', '#307D7E', '#5E7D7E', '#4C787E', '#008080', 
+                    '#4E8975', '#78866B', '#848b79', '#617C58', '#728C00', '#667C26',
+                    '#CA226B', '#C12869', '#C12267', '#C25283', '#C12283', '#B93B8F', 
+                    '#7E587E', '#571B7E', '#583759', '#4B0082', '#461B7E', '#4E387E'
+                ];
+
+                // handle list selection
+                $('.color-list').on('click', 'li', function() {
+                    // @todo api became pretty messy, needs refactoring
+                    var elem = tt.core.getElementById($(this).data('elem_id')),
+                        note = tt.core.getNote(elem, $(this).data('note_id'));
+                    
+                    $('html, body').animate({
+                        scrollTop: (tt(note).offset().top + (tt(note).height() / 2)) - ($(window).height() / 2)
+                    }, 500, function() {
+                        tt(note).tooltip().on({
+                            'deleted.note.tt': remove_from_list
+                        }); 
+                    });
+                });
+
+                // handle color selection
+                $('.color-picker').on('click', '.colorbox', function() {
+                    tt(this).tooltip().unbind('new.note.tt').on({
+                        'new.note.tt': function(e, tooltip, note) {
+                            add_to_list(note);
+                        },
+                        'deleted.note.tt': remove_from_list
+                    });    
+                });
+
+                function add_to_list(note) {
+                    var MAX_LEN = 20;
+                
+                    var short = note.content.substr(0, MAX_LEN);
+                    if(short.length === MAX_LEN && note.content.length !== MAX_LEN)
+                        short += '...';
+                    
+                    $('.color-list').append(
+                        $('<li/>')
+                            .attr('data-note_id', note.id)
+                            .data('elem_id', tt.core.getElementId(note.element))
+                            .text(short)
+                    );             
+                }
+
+                function remove_from_list(event, tooltip, note_id) {
+                    $('.color-list').find('li[data-note_id="' + note_id + '"]').remove(); 
+                }
+
+                // generate colorboxes
+                $.each(colors, function(idx, color) {
+                    var colorbox = $('<div/>').addClass('colorbox').css('background-color', color);
+                    $('.colors').append(colorbox);
+                });
+                
+                tt(document.body).init({
+                    vendor: {
+                        bitly: {
+                            access_token: BITLY_ACCESS_TOKEN
+                        }
+                    },
+                    onElementNote: add_to_list
+                });
+            });
+        </script>
+    </body>
+</html>
