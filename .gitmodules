@@ -13,3 +13,6 @@
 [submodule "libs/js-base64"]
 	path = libs/js-base64
 	url = https://github.com/dankogai/js-base64
+[submodule "examples/jnottery-com"]
+	path = examples/jnottery-com
+	url = https://github.com/zdunczyk/jnottery-com.git
