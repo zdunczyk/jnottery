@@ -1,0 +1,104 @@
+<!doctype html>
+<!--
+    jNottery (c) 2014, Tomasz Zduńczyk <tomasz@zdunczyk.org>
+    Released under the MIT license.
+-->
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>jNottery demo - Simple selection</title>
+        <script>
+            var BITLY_ACCESS_TOKEN = '';
+        </script>
+        <link rel="stylesheet" href="../../build/jnottery-v0.1.0-pa.css">
+        <style>
+            .ipsum {
+                width: 600px; 
+                text-align: justify;
+                margin-left: 40px;
+            }
+
+            .footer {
+                font-size: 12px;
+                margin-top: 20px;
+            }
+
+            .tt-selection {
+                background-color: #148F76;
+                color: white;
+            }
+
+            .container {
+                width: 680px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            Select some text from Lorem ipsum article and click on the button below to add a note.
+            Added notes can be previewed by clicking on corresponding selection.
+            <hr>
+            <div class="ipsum">   
+                <h1>Lorem ipsum</h1>
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque porta consequat turpis, sit amet accumsan urna elementum in. Sed sodales rhoncus mi. Vestibulum luctus condimentum nisi sed interdum. Proin ut urna consectetur, adipiscing neque non, lacinia enim. Mauris posuere a metus ut mattis. Ut rhoncus neque libero, sed tincidunt dolor aliquet ut. Aenean vehicula fringilla lobortis. In at orci sit amet erat hendrerit condimentum. Phasellus et faucibus libero.
+                </p>
+                <p>
+                    Integer tristique, nisi ut imperdiet dapibus, velit nisi faucibus quam, non facilisis purus turpis vel purus. Vivamus cursus sed libero eget porttitor. Donec aliquam eros a elementum volutpat. Vestibulum sagittis arcu ac diam posuere varius. Ut aliquam rutrum scelerisque. Suspendisse ultrices pharetra posuere. Maecenas placerat vel leo non ullamcorper. Donec pulvinar id enim eu accumsan. Curabitur mi ante, molestie sed rhoncus quis, tempor in risus. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Duis non porta nulla. Vestibulum faucibus porttitor urna ac convallis. In vitae metus vestibulum, sollicitudin sem ut, tincidunt leo.
+                </p>
+                <p>
+                    Morbi molestie, lorem sed volutpat aliquam, augue mauris ornare ante, ac posuere diam mauris quis tellus. Mauris sagittis tincidunt turpis, quis consectetur eros tempus ut. Integer consequat in turpis blandit consequat. Vestibulum vehicula cursus leo sed tempus. Praesent fringilla, orci in lacinia porta, dui sem tempor turpis, quis pharetra nibh magna vel lacus. Vivamus non augue augue. In eleifend et risus in scelerisque. Nunc pellentesque at quam at pharetra.
+                </p>
+                <p>
+                    Suspendisse consequat, neque id dapibus dignissim, leo nulla pharetra quam, eu ultrices eros nisl non augue. Proin interdum quam non arcu mattis egestas. Ut cursus diam eu libero vestibulum, vel congue lorem auctor. Morbi id consequat justo, quis gravida urna. Nam at arcu at turpis condimentum tincidunt a at tellus. Quisque elementum turpis non velit aliquam, a venenatis lorem varius. Sed ligula augue, posuere quis nibh sed, varius elementum dolor. Nullam elit lacus, convallis in eleifend quis, dignissim non diam. Integer molestie libero varius metus porttitor, quis varius dui sagittis. Phasellus tincidunt ullamcorper urna, ut auctor nulla dictum accumsan. Nullam a mi tempor, condimentum neque nec, tempus metus.
+                </p>
+                <p>
+                    Fusce ornare libero sed odio eleifend, sit amet posuere mi ornare. Vivamus at accumsan ante, et feugiat tellus. Vestibulum dapibus suscipit dolor, at adipiscing lorem hendrerit vel. Nunc dignissim felis vehicula, dapibus dui sit amet, faucibus purus. Aenean eros ipsum, feugiat et vehicula id, pellentesque a massa. Proin dictum posuere euismod. Vestibulum et nisl sed diam mollis malesuada. 
+                </p>
+                <input type="button" value="Add note to selection" id="save_btn"/>
+            </div>
+            <div class="footer">
+                <a href="http://jnottery.com/">jNottery</a> demo page. 
+                Other examples are available <a href="http://jnottery.com/examples">here</a>.
+                Source code of this page is released on <a href="https://github.com/zdunczyk/jnottery/tree/master/examples">Github</a>.
+            </div>     
+        </div>
+        <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script> 
+        <script src="../../build/jnottery-full-v0.1.0-pa.min.js"></script>
+        <script>
+            $(function() {
+                // open tooltip after click on selection
+                function preview_handler(note) {
+                    tt(note).click(function() {
+                        tt(note).tooltip();   
+                    }); 
+                } 
+                
+                tt(document.body).init({
+                    vendor: {
+                        bitly: {
+                            access_token: BITLY_ACCESS_TOKEN
+                        }
+                    },
+                    onSelectionNote: preview_handler
+                });
+               
+                // save button
+                $('#save_btn').click(function() {
+                    var selection = tt('.ipsum').selection();
+
+                    // when anything was selected
+                    if(selection.length) {
+                        tt(selection).tooltip().on({
+                            'new.note.tt': function(e, tooltip_obj, note) {
+                                preview_handler(note); 
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
